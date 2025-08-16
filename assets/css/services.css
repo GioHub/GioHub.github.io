@@ -1,0 +1,167 @@
+/*------------------------------------------------------------------
+  Project: Olivia
+  Author: Upsqode
+  Last change: 01/01/2024 
+  Primary use: 
+------------------------------------------------------------------ */
+/*-----------------------[Table of contents]------------------------ 
+1.Services Page CSS 
+------------------------------------------------------------------ */
+/*-----------------------[ 1.Services Page CSS  ]------------------------*/
+.services_box_main {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.drop-menu .menu-content .navbar-side .services_page {
+    filter: brightness(0) saturate(100%) invert(100%) sepia(23%) saturate(5408%) hue-rotate(72deg) brightness(95%) contrast(89%) !important;
+}
+
+.service_box {
+    background-color: var(--one-background);
+    padding: 20px;
+    border-radius: 20px;
+}
+
+.services_icon {
+    filter: var(--nav-menu-icon);
+    transition: all 0.5s;
+}
+
+.service_box:hover .services_icon {
+    filter: brightness(0) saturate(100%) invert(100%) sepia(23%) saturate(5408%) hue-rotate(72deg) brightness(95%) contrast(89%);
+    transition: all 0.5s;
+}
+
+.ui_ux {
+    color: var(--card-text);
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 30px;
+    padding: 20px 0 10px 0;
+    transition: all 0.5s;
+    margin: 0;
+}
+
+.service_box:hover .ui_ux {
+    color: #55E6A5;
+    transition: all 0.5s;
+}
+
+.ui_sub_text {
+    color: var(--card-sub-text);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+}
+
+.pricing_group {
+    padding-top: 50px;
+}
+
+.plan_box {
+    border-radius: 20px;
+    border: 2px solid var(--one-background);
+    transition: all 0.5s;
+}
+
+#plan_box,
+#plan_box2 {
+    margin-top: 20px;
+}
+
+.plan_box:hover {
+    border: 2px solid #55E6A5;
+    transition: all 0.5s;
+}
+
+.plan_box_sub {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.shopping_bag {
+    padding-right: 10px;
+}
+
+button:hover .shopping_bag {
+    filter: var(--bag);
+}
+
+.basic_plain {
+    color: var(--card-text);
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 30px;
+    margin: 0;
+    padding-bottom: 10px;
+}
+
+.per_month {
+    color: var(--card-text);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 30px;
+    margin: 0;
+}
+
+.plan_price {
+    color: var(--1, #55E6A5);
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 30px;
+    margin: 0;
+}
+
+.build {
+    color: var(--card-text);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    padding: 10px 20px;
+    background: var(--one-background);
+    margin: 0;
+}
+
+.help {
+    color: #55E6A5;
+}
+
+.plan_box_sub2 {
+    padding: 20px;
+}
+
+.web-dev {
+    color: var(--card-sub-text);
+    font-family: Kodchasan;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    margin: 0;
+    padding-left: 10px;
+}
+
+.plan_box_sub2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.web-dev_main {
+    display: flex;
+    align-items: center;
+}
+
+.decline {
+    text-decoration: line-through;
+}

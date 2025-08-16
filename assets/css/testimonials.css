@@ -1,0 +1,60 @@
+/*------------------------------------------------------------------
+  Project: Olivia
+  Author: Upsqode
+  Last change: 01/01/2024 
+  Primary use: 
+------------------------------------------------------------------ */
+/*-----------------------[Table of contents]------------------------ 
+1.Testimonials CSS 
+------------------------------------------------------------------ */
+/*-----------------------[ 1.Testimonials CSS  ]------------------------*/
+.drop-menu .menu-content .navbar-side .testimonials_page {
+    filter: brightness(0) saturate(100%) invert(100%) sepia(23%) saturate(5408%) hue-rotate(72deg) brightness(95%) contrast(89%) !important;
+}
+.testimonials_card {
+    cursor: w-resize;
+    border-radius: 20px;
+    background: var(--one-background);
+    padding: 50px;
+}
+.slider_contain_main {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.client_img {
+    border-radius: 50%;
+    margin-right: 20px;
+}
+.img_text {
+    display: flex;
+    align-items: center;
+}
+.client_name {
+    color: var(--card-text);
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    margin: 0;
+    padding-bottom: 10px;
+}
+.client_roll {
+    color: var(--card-sub-text);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    text-transform: uppercase;
+    margin: 0;
+}
+.rating_main {
+    padding: 15px 0 10px 0;
+}
+.placerat {
+    color: var(--card-sub-text);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+}

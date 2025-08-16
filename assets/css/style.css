@@ -1,0 +1,1178 @@
+/*------------------------------------------------------------------
+  Project: Olivia
+  Author: Upsqode
+  Last change: 01/01/2024 
+  Primary use: 
+------------------------------------------------------------------ */
+/*-----------------------[Table of contents]------------------------ 
+1.Default CSS 
+2.Preloader CSS
+3.Cursor CSS
+4.Section Fix Image CSS
+5.Dark Light Mode CSS
+6.Fix Image Social Icon CSS 
+7.Side Menu CSS
+8.Section Contain CSS
+9.Footer Contain CSS
+10.Scrollbar CSS
+------------------------------------------------------------------ */
+/*-----------------------[ 1.Default CSS ]------------------------*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Kodchasan', sans-serif;
+    scroll-behavior: smooth;
+}
+
+ul {
+    margin: 0;
+    padding-left: 0;
+}
+
+a {
+    text-decoration: none;
+    color: var(--card-text);
+}
+
+.row {
+    --bs-gutter-x: 0;
+}
+
+:root {
+    --primary-color: #F2F3F5;
+    --one: #02050A;
+    --one-background: #F2F3F5;
+    --card-background: #FFF;
+    --card-text: #02050A;
+    --card-sub-text: #545454;
+    --button-color-hover: #02050A;
+    --circle-img-border: #FFF;
+    --circle-img-filter: brightness(0) saturate(100%) invert(34%) sepia(0%) saturate(2216%) hue-rotate(304deg) brightness(90%) contrast(88%);
+    --down_arrow-filter: brightness(0) saturate(100%) invert(1%) sepia(98%) saturate(3%) hue-rotate(4deg) brightness(102%) contrast(99%);
+    --menu-toggle-btn: #02050A;
+    --nav-menu-icon: brightness(0) saturate(100%) invert(1%) sepia(1%) saturate(4%) hue-rotate(261deg) brightness(99%) contrast(98%);
+    --background-blur: linear-gradient(95deg, rgba(255, 255, 255, 0.40) 0%, rgba(2, 5, 10, 0.20) 100%, rgba(255, 255, 255, 0.20) 100%);
+    --designer-text: #FFF;
+    --dev-icons: brightness(0) saturate(100%) invert(1%) sepia(0%) saturate(7497%) hue-rotate(68deg) brightness(97%) contrast(99%);
+    --uiux: #02050A;
+    --uiux-hover: brightness(0) saturate(100%) invert(100%) sepia(23%) saturate(5408%) hue-rotate(72deg) brightness(95%) contrast(89%);
+    --uiux-text-hover: #55E6A5;
+    --bag: brightness(0) saturate(100%) invert(2%) sepia(4%) saturate(7498%) hue-rotate(139deg) brightness(101%) contrast(99%);
+    --background-hover-card: rgba(0, 0, 0, 0.7);
+}
+
+.dark-mode {
+    --primary-color: #02050A;
+    --one: #55E6A5;
+    --one-background: #141C27;
+    --card-background: #09101A;
+    --card-text: #FFF;
+    --card-sub-text: #A2A2A2;
+    --button-color-hover: #FFF;
+    --circle-img-border: #141C27;
+    --circle-img-filter: brightness(0) saturate(100%) invert(69%) sepia(0%) saturate(0%) hue-rotate(74deg) brightness(94%) contrast(93%);
+    --down_arrow-filter: brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(0%) hue-rotate(181deg) brightness(103%) contrast(103%);
+    --menu-toggle-btn: #141C27;
+    --nav-menu-icon: brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(0%) hue-rotate(181deg) brightness(103%) contrast(103%);
+    --background-blur: linear-gradient(95deg, rgba(2, 5, 10, 0.40) 0%, rgba(2, 5, 10, 0.20) 100%);
+    --designer-text: #A2A2A2;
+    --dev-icons: brightness(0) saturate(100%) invert(86%) sepia(5%) saturate(4533%) hue-rotate(91deg) brightness(98%) contrast(85%);
+    --uiux: #55E6A5;
+    --uiux-hover: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(2%) hue-rotate(275deg) brightness(103%) contrast(103%);
+    --uiux-text-hover: #FFF;
+    --bag: brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(0%) hue-rotate(286deg) brightness(101%) contrast(101%);
+    --background-hover-card: rgba(172, 171, 171, 0.603);
+}
+
+body {
+    background-color: var(--card-background);
+}
+
+.drop-menu .menu-content .navbar-side .home_page {
+    filter: brightness(0) saturate(100%) invert(100%) sepia(23%) saturate(5408%) hue-rotate(72deg) brightness(95%) contrast(89%) !important;
+}
+
+/*-----------------------[ Background Animation CSS ]------------------------*/
+#canvas {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    cursor: none;
+}
+
+#particles-js {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.slideshow {
+    list-style-type: none;
+    background-position: top center;
+    width: inherit;
+    height: 100vh;
+    background-size: cover;
+    left: 0;
+    right: 0;
+    position: fixed;
+    background-origin: border-box;
+    background-repeat: no-repeat;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.slideshow li span {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    color: transparent;
+    background-size: cover;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    opacity: 0;
+    z-index: 0;
+    animation: imageAnimation 30s linear infinite 0s;
+}
+
+.slideshow li:nth-child(1) span {
+    background-image: url("../images/slider_img1.jpg");
+    background-position: top center;
+    width: inherit;
+    height: 100vh;
+    background-size: cover;
+    left: 0;
+    right: 0;
+    position: fixed;
+    background-origin: border-box;
+    background-repeat: no-repeat;
+    max-width: 100%;
+    max-height: 100%;
+
+}
+
+.slideshow li:nth-child(2) span {
+    background-image: url("../images/slider_img2.jpg");
+    animation-delay: 6s;
+    background-position: top center;
+    width: inherit;
+    height: 100vh;
+    background-size: cover;
+    left: 0;
+    right: 0;
+    position: fixed;
+    background-origin: border-box;
+    background-repeat: no-repeat;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.slideshow li:nth-child(3) span {
+    background-image: url("../images/slider_img3.jpg");
+    animation-delay: 12s;
+    background-position: top center;
+    width: inherit;
+    height: 100vh;
+    background-size: cover;
+    left: 0;
+    right: 0;
+    position: fixed;
+    background-origin: border-box;
+    background-repeat: no-repeat;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.slideshow li:nth-child(4) span {
+    background-image: url("../images/slider_img4.jpg");
+    animation-delay: 18s;
+    background-position: top center;
+    width: inherit;
+    height: 100vh;
+    background-size: cover;
+    left: 0;
+    right: 0;
+    position: fixed;
+    background-origin: border-box;
+    background-repeat: no-repeat;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.slideshow li:nth-child(5) span {
+    background-image: url("../images/slider_img5.jpg");
+    animation-delay: 24s;
+    background-position: top center;
+    width: inherit;
+    height: 100vh;
+    background-size: cover;
+    left: 0;
+    right: 0;
+    position: fixed;
+    background-origin: border-box;
+    background-repeat: no-repeat;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+@keyframes imageAnimation {
+    0% {
+        opacity: 0;
+        animation-timing-function: ease-in;
+    }
+
+    8% {
+        opacity: 1;
+        animation-timing-function: ease-out;
+    }
+
+    17% {
+        opacity: 1
+    }
+
+    25% {
+        opacity: 0
+    }
+
+    100% {
+        opacity: 0
+    }
+}
+
+.no-cssanimations .cb-slideshow li span {
+    opacity: 1;
+}
+
+/* Bubbles Bg animation */
+.bubbles {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.bubble {
+    position: absolute;
+    left: var(--bubble-left-offset);
+    bottom: -75%;
+    display: block;
+    width: var(--bubble-radius);
+    height: var(--bubble-radius);
+    border-radius: 50%;
+    animation: float-up var(--bubble-float-duration) var(--bubble-float-delay) ease-in infinite;
+}
+
+.bubble::before {
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #ffffff7a;
+    border-radius: inherit;
+    animation: var(--bubble-sway-type) var(--bubble-sway-duration) var(--bubble-sway-delay) ease-in-out alternate infinite;
+}
+
+.bubble:nth-child(0) {
+    --bubble-left-offset: 50vw;
+    --bubble-radius: 7vw;
+    --bubble-float-duration: 11s;
+    --bubble-sway-duration: 6s;
+    --bubble-float-delay: 1s;
+    --bubble-sway-delay: 1s;
+    --bubble-sway-type: sway-right-to-left;
+}
+
+.bubble:nth-child(1) {
+    --bubble-left-offset: 1vw;
+    --bubble-radius: 9vw;
+    --bubble-float-duration: 9s;
+    --bubble-sway-duration: 5s;
+    --bubble-float-delay: 4s;
+    --bubble-sway-delay: 4s;
+    --bubble-sway-type: sway-left-to-right;
+}
+
+.bubble:nth-child(2) {
+    --bubble-left-offset: 1vw;
+    --bubble-radius: 3vw;
+    --bubble-float-duration: 6s;
+    --bubble-sway-duration: 4s;
+    --bubble-float-delay: 3s;
+    --bubble-sway-delay: 4s;
+    --bubble-sway-type: sway-right-to-left;
+}
+
+.bubble:nth-child(3) {
+    --bubble-left-offset: 98vw;
+    --bubble-radius: 2vw;
+    --bubble-float-duration: 10s;
+    --bubble-sway-duration: 6s;
+    --bubble-float-delay: 3s;
+    --bubble-sway-delay: 0s;
+    --bubble-sway-type: sway-right-to-left;
+}
+
+.bubble:nth-child(4) {
+    --bubble-left-offset: 80vw;
+    --bubble-radius: 4vw;
+    --bubble-float-duration: 12s;
+    --bubble-sway-duration: 4s;
+    --bubble-float-delay: 4s;
+    --bubble-sway-delay: 2s;
+    --bubble-sway-type: sway-right-to-left;
+}
+
+.bubble:nth-child(5) {
+    --bubble-left-offset: 85vw;
+    --bubble-radius: 8vw;
+    --bubble-float-duration: 7s;
+    --bubble-sway-duration: 4s;
+    --bubble-float-delay: 0s;
+    --bubble-sway-delay: 0s;
+    --bubble-sway-type: sway-right-to-left;
+}
+
+.bubble:nth-child(6) {
+    --bubble-left-offset: 36vw;
+    --bubble-radius: 3vw;
+    --bubble-float-duration: 9s;
+    --bubble-sway-duration: 6s;
+    --bubble-float-delay: 2s;
+    --bubble-sway-delay: 0s;
+    --bubble-sway-type: sway-left-to-right;
+}
+
+.bubble:nth-child(7) {
+    --bubble-left-offset: 27vw;
+    --bubble-radius: 10vw;
+    --bubble-float-duration: 6s;
+    --bubble-sway-duration: 5s;
+    --bubble-float-delay: 0s;
+    --bubble-sway-delay: 0s;
+    --bubble-sway-type: sway-right-to-left;
+}
+
+.bubble:nth-child(8) {
+    --bubble-left-offset: 76vw;
+    --bubble-radius: 4vw;
+    --bubble-float-duration: 12s;
+    --bubble-sway-duration: 6s;
+    --bubble-float-delay: 1s;
+    --bubble-sway-delay: 4s;
+    --bubble-sway-type: sway-left-to-right;
+}
+
+.bubble:nth-child(9) {
+    --bubble-left-offset: 46vw;
+    --bubble-radius: 1vw;
+    --bubble-float-duration: 11s;
+    --bubble-sway-duration: 6s;
+    --bubble-float-delay: 0s;
+    --bubble-sway-delay: 2s;
+    --bubble-sway-type: sway-right-to-left;
+}
+
+.bubble:nth-child(10) {
+    --bubble-left-offset: 52vw;
+    --bubble-radius: 2vw;
+    --bubble-float-duration: 9s;
+    --bubble-sway-duration: 5s;
+    --bubble-float-delay: 3s;
+    --bubble-sway-delay: 2s;
+    --bubble-sway-type: sway-left-to-right;
+}
+
+.bubble:nth-child(11) {
+    --bubble-left-offset: 84vw;
+    --bubble-radius: 5vw;
+    --bubble-float-duration: 11s;
+    --bubble-sway-duration: 5s;
+    --bubble-float-delay: 2s;
+    --bubble-sway-delay: 4s;
+    --bubble-sway-type: sway-right-to-left;
+}
+
+.bubble:nth-child(12) {
+    --bubble-left-offset: 39vw;
+    --bubble-radius: 2vw;
+    --bubble-float-duration: 10s;
+    --bubble-sway-duration: 4s;
+    --bubble-float-delay: 1s;
+    --bubble-sway-delay: 0s;
+    --bubble-sway-type: sway-left-to-right;
+}
+
+.bubble:nth-child(13) {
+    --bubble-left-offset: 28vw;
+    --bubble-radius: 4vw;
+    --bubble-float-duration: 7s;
+    --bubble-sway-duration: 5s;
+    --bubble-float-delay: 2s;
+    --bubble-sway-delay: 0s;
+    --bubble-sway-type: sway-right-to-left;
+}
+
+.bubble:nth-child(14) {
+    --bubble-left-offset: 4vw;
+    --bubble-radius: 10vw;
+    --bubble-float-duration: 11s;
+    --bubble-sway-duration: 4s;
+    --bubble-float-delay: 1s;
+    --bubble-sway-delay: 1s;
+    --bubble-sway-type: sway-left-to-right;
+}
+
+.bubble:nth-child(15) {
+    --bubble-left-offset: 32vw;
+    --bubble-radius: 4vw;
+    --bubble-float-duration: 9s;
+    --bubble-sway-duration: 4s;
+    --bubble-float-delay: 3s;
+    --bubble-sway-delay: 2s;
+    --bubble-sway-type: sway-right-to-left;
+}
+
+.bubble:nth-child(16) {
+    --bubble-left-offset: 15vw;
+    --bubble-radius: 3vw;
+    --bubble-float-duration: 7s;
+    --bubble-sway-duration: 5s;
+    --bubble-float-delay: 4s;
+    --bubble-sway-delay: 1s;
+    --bubble-sway-type: sway-left-to-right;
+}
+
+.bubble:nth-child(17) {
+    --bubble-left-offset: 24vw;
+    --bubble-radius: 5vw;
+    --bubble-float-duration: 10s;
+    --bubble-sway-duration: 5s;
+    --bubble-float-delay: 3s;
+    --bubble-sway-delay: 2s;
+    --bubble-sway-type: sway-left-to-right;
+}
+
+.bubble:nth-child(18) {
+    --bubble-left-offset: 45vw;
+    --bubble-radius: 5vw;
+    --bubble-float-duration: 7s;
+    --bubble-sway-duration: 5s;
+    --bubble-float-delay: 2s;
+    --bubble-sway-delay: 0s;
+    --bubble-sway-type: sway-left-to-right;
+}
+
+.bubble:nth-child(19) {
+    --bubble-left-offset: 21vw;
+    --bubble-radius: 6vw;
+    --bubble-float-duration: 8s;
+    --bubble-sway-duration: 6s;
+    --bubble-float-delay: 1s;
+    --bubble-sway-delay: 0s;
+    --bubble-sway-type: sway-right-to-left;
+}
+
+.bubble:nth-child(20) {
+    --bubble-left-offset: 26vw;
+    --bubble-radius: 9vw;
+    --bubble-float-duration: 11s;
+    --bubble-sway-duration: 4s;
+    --bubble-float-delay: 2s;
+    --bubble-sway-delay: 2s;
+    --bubble-sway-type: sway-left-to-right;
+}
+
+@keyframes float-up {
+    to {
+        transform: translateY(-175vh);
+    }
+}
+
+@keyframes sway-left-to-right {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(100%);
+    }
+}
+
+@keyframes sway-right-to-left {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(-100%);
+    }
+}
+
+/*-----------------------[ 2.Preloader CSS ]------------------------*/
+#loader-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+}
+
+#loader {
+    display: block;
+    position: relative;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1001;
+}
+
+#loader-wrapper .loader-section {
+    position: fixed;
+    top: 0;
+    width: 51%;
+    height: 100%;
+    background-color: var(--primary-color);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-blend-mode: multiply;
+    z-index: 1000;
+    transform: translateX(0);
+}
+
+#loader-wrapper .loader-section.section-left {
+    left: 0;
+}
+
+#loader-wrapper .loader-section.section-right {
+    right: 0;
+}
+
+.loaded #loader-wrapper .loader-section.section-left {
+    transform: translateY(-100%);
+    transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.loaded #loader-wrapper .loader-section.section-right {
+    transform: translateY(100%);
+    transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.loaded #loader {
+    opacity: 0;
+    transition: all 0.3s ease-out;
+}
+
+.loaded #loader-wrapper {
+    visibility: hidden;
+    transform: translateX(-100%);
+    transition: all 0.3s 1s ease-out;
+}
+
+svg text {
+    text-transform: uppercase;
+    animation: stroke 3s alternate;
+    stroke-width: 2;
+    stroke: #55E6A5;
+    font-size: 100px;
+    font-weight: 600;
+}
+
+@keyframes stroke {
+    0% {
+        fill: rgba(72, 138, 20, 0);
+        stroke: #55E6A5;
+        stroke-dashoffset: 25%;
+        stroke-dasharray: 0 50%;
+        stroke-width: 2;
+    }
+
+    70% {
+        fill: rgba(72, 138, 20, 0);
+        stroke: #55E6A5;
+    }
+
+    80% {
+        fill: rgba(72, 138, 20, 0);
+        stroke: #55E6A5;
+        stroke-width: 3;
+    }
+
+    100% {
+        fill: #55E6A5;
+        stroke: rgba(54, 95, 160, 0);
+        stroke-dashoffset: -25%;
+        stroke-dasharray: 50% 0;
+        stroke-width: 0;
+    }
+}
+
+/*-----------------------[ 3.Cursor CSS ]------------------------*/
+.cursor {
+    position: fixed;
+    width: 30px;
+    height: 30px;
+    margin-left: -20px;
+    margin-top: -20px;
+    border-radius: 50%;
+    border: 2px solid #55E6A5;
+    transition: transform 0.3s ease;
+    transform-origin: center center;
+    pointer-events: none;
+    z-index: 5000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.grow,
+.grow-small {
+    transform: scale(2);
+    background: #FFF;
+    mix-blend-mode: difference;
+    border: 0;
+}
+
+.grow-small {
+    transform: scale(1);
+}
+
+/*-----------------------[ 4.Section Fix Image CSS ]------------------------*/
+.olivia-home-image {
+    background-image: url(../images/slider_img5.jpg);
+    background-position: center;
+    width: inherit;
+    height: 100vh;
+    background-size: cover;
+    left: 0;
+    right: 0;
+    position: fixed;
+    background-origin: border-box;
+    background-repeat: no-repeat;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+}
+
+#olivia-home-image-grayscale {
+    filter: grayscale(100%);
+}
+
+#olivia-home-image-grayscale:hover {
+    filter: grayscale(0);
+}
+
+.row.home-content-row {
+    height: 100vh;
+}
+
+.logo-menu-img {
+    display: none;
+}
+
+.olivia-home-image2 {
+    width: inherit;
+    height: 100vh;
+    background-size: cover;
+    left: 0;
+    right: 0;
+    position: fixed;
+    background-origin: border-box;
+    background-repeat: no-repeat;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+}
+
+/*-----------------------[ 5.Dark Light Mode CSS ]------------------------*/
+.ul-header {
+    color: var(--tertiary-color);
+    text-decoration: none;
+    font-size: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    padding: 40px;
+    position: absolute;
+    top: 0;
+}
+
+.ul-header2 {
+    display: none;
+}
+
+.ul-header a:active,
+a:visited {
+    text-decoration: none;
+    color: var(--quinary-color);
+}
+
+.icon-container {
+    position: relative;
+    width: 24px;
+    height: 24px;
+}
+
+.icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 1;
+    transition: opacity 0.8s ease;
+}
+
+.icon.hidden {
+    opacity: 0;
+}
+
+/*-----------------------[ 6.Fix Image Social Icon CSS ]------------------------*/
+.social-menu ul {
+    position: absolute;
+    bottom: 0%;
+    left: 50%;
+    padding: 0;
+    margin: 0;
+    transform: translate(-50%, -50%);
+    display: flex;
+}
+
+.social-menu ul li {
+    list-style: none;
+    margin: 0 15px;
+}
+
+.social-menu ul li .fab {
+    font-size: 22px;
+    line-height: 50px;
+    transition: .3s;
+    color: #000;
+}
+
+.social-menu ul li .fab:hover {
+    color: #fff;
+}
+
+.social-menu ul li a {
+    position: relative;
+    display: block;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #fff;
+    text-align: center;
+    transition: .6s;
+    box-shadow: 0 5px 4px rgba(0, 0, 0, .5);
+}
+
+.social-menu ul li a:hover {
+    transform: translate(0, -10%);
+}
+
+.social-menu ul li:nth-child(1) a:hover {
+    background-color: #4267B2;
+}
+
+.social-menu ul li:nth-child(2) a:hover {
+    background-color: #E4405F;
+}
+
+.social-menu ul li:nth-child(3) a:hover {
+    background-color: #0077b5;
+}
+
+.social-menu ul li:nth-child(4) a:hover {
+    background-color: #25d366;
+}
+
+.second_dark_light_toggle {
+    display: none;
+}
+
+/*-----------------------[ 7.Side Menu CSS ]------------------------*/
+
+.drop-menu {
+    width: 100%;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.drop-menu .menu-content {
+    right: 0;
+    top: 0;
+    max-width: 350px;
+    width: 100%;
+    min-height: 100vh;
+    background: var(--one-background);
+    position: fixed;
+    transform: translateX(100vw);
+    transition: transform 0.6s cubic-bezier(0.56, 0.1, 0.34, 0.91);
+    padding: 0;
+    z-index: 8;
+    overflow-y: scroll;
+}
+
+.drop-menu .menu-content::-webkit-scrollbar {
+    display: none;
+}
+
+.drop-menu .menu-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drop-menu .menu-content .navbar-side {
+    margin: 0;
+    list-style: none;
+    padding: 0;
+    padding-top: 0px;
+    padding-left: 0px;
+}
+
+.drop-menu .menu-content .navbar-side li {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--card-text);
+    position: relative;
+    text-transform: uppercase;
+    padding: 12px 0;
+    display: flex;
+    align-items: stretch;
+}
+
+.menu_icons {
+    padding-right: 10px;
+    filter: var(--nav-menu-icon);
+    cursor: pointer;
+}
+
+.drop-menu .menu-content .navbar-side li:hover {
+    color: #55E6A5;
+    text-decoration: none;
+    filter: brightness(0) saturate(100%) invert(100%) sepia(23%) saturate(5408%) hue-rotate(72deg) brightness(95%) contrast(89%);
+}
+
+.drop-menu .menu-content .navbar-side li a i {
+    font-size: 25px;
+}
+
+.drop-menu .menu-content .navbar-side li .line-menu {
+    display: none;
+}
+
+.drop-menu .menu-content .social-menu {
+    margin: 0;
+    list-style: none;
+    padding: 0;
+}
+
+.menu-open .menu-content {
+    transform: translateX(0);
+}
+
+header {
+    position: fixed;
+    top: 0;
+    z-index: 9;
+    background: var(--card-background);
+    width: inherit;
+    overflow: hidden;
+    padding: 0 50px;
+    height: 70px;
+}
+
+.navbar .menu-touch,
+.navbar .menu-touch span {
+    display: inline-block;
+    transition: all 0.4s;
+    box-sizing: border-box;
+}
+
+.navbar .menu-touch {
+    position: relative;
+    width: 30px;
+    height: 24px;
+    text-align: right;
+    cursor: pointer;
+}
+
+.navbar .menu-touch span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: var(--card-text);
+    border-radius: 4px;
+}
+
+.navbar .menu-touch span:nth-of-type(1) {
+    top: 0;
+}
+
+.navbar .menu-touch span:nth-of-type(2) {
+    top: 10px;
+}
+
+.navbar .menu-touch span:nth-of-type(3) {
+    bottom: 0;
+}
+
+.navbar .menu-touch:not(.active):hover span:nth-of-type(2) {
+    width: 70%;
+}
+
+.navbar .menu-touch:not(.active):hover span:nth-of-type(3) {
+    width: 35%;
+}
+
+.navbar .menu-touch.active span:nth-of-type(1) {
+    -webkit-transform: translateY(10px) rotate(-45deg);
+    transform: translateY(10px) rotate(-45deg);
+}
+
+.navbar .menu-touch.active span:nth-of-type(2) {
+    opacity: 0;
+}
+
+.navbar .menu-touch.active span:nth-of-type(3) {
+    -webkit-transform: translateY(-10px) rotate(45deg);
+    transform: translateY(-10px) rotate(45deg);
+}
+
+.navbar .logo {
+    margin: 0;
+    z-index: 8;
+    display: flex;
+    width: 50%;
+    height: auto;
+}
+
+.navbar .logo a img {
+    max-height: 80px;
+}
+
+.navbar .bnt-navbar {
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    width: 4%;
+    padding-top: 10px;
+}
+
+.loader-pag {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background-color: #fff;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loader-pag .blc-loading {
+    position: absolute;
+    left: calc(50% - 136px);
+    top: calc(50% - 72px);
+}
+
+.site-content {
+    overflow-x: hidden;
+}
+
+/*-----------------------[ 8.Section Contain CSS ]------------------------*/
+.contan_main {
+    padding: 0px 100px 0px 100px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    justify-content: center;
+    background-color: var(--card-background);
+}
+
+.contan_main2 {
+    height: 100%;
+    padding: 100px 100px 120px 100px;
+    background-color: var(--card-background);
+}
+
+.intro {
+    color: var(--one);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px;
+    text-transform: uppercase;
+    background: var(--one-background);
+    padding: 5px 15px;
+    border-radius: 15px;
+    display: inline-block;
+    margin: 0;
+}
+
+.moswa {
+    color: var(--card-text);
+    font-size: 60px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 75px;
+    padding: 20px 0;
+    margin: 0;
+}
+
+.passionate {
+    color: var(--card-sub-text);
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 30px;
+    margin: 0;
+    padding-bottom: 40px;
+}
+
+.circular_text_main {
+    display: flex;
+    justify-content: end;
+}
+
+.circular_text {
+    animation: rotating 6s infinite linear;
+    border: 1px solid var(--circle-img-border);
+    border-radius: 100%;
+    padding: 8px;
+    filter: var(--circle-img-filter);
+}
+
+.button_circle_group {
+    display: flex;
+    justify-content: space-between;
+}
+
+.down_arrow_main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.down_arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    filter: var(--down_arrow-filter);
+}
+
+@keyframes rotating {
+    0% {
+        transform: rotate(0);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+button {
+    border: 2px solid transparent;
+    background: #55E6A5;
+    font-family: 'Kodchasan';
+    transition: all 0.3s;
+}
+
+button:hover {
+    background: transparent;
+    border: 2px solid #55E6A5;
+    color: var(--button-color-hover);
+    border-radius: 0;
+    transition: all 0.3s;
+}
+
+.ri-download-cloud-2-line {
+    padding-right: 10px;
+}
+
+.download_cv {
+    padding: 18px 30px;
+    border-radius: 20px;
+    color: var(--2, #02050A);
+    text-align: center;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+}
+
+/*-----------------------[ 9.Footer Contain CSS ]------------------------*/
+.olivia-footer-wrap {
+    padding: 20px 30px;
+    background: var(--primary-color);
+    width: -webkit-fill-available;
+    position: fixed;
+    bottom: 0;
+    text-align: center;
+    width: -moz-available;
+}
+
+.olivia-copyright-content {
+    color: var(--card-sub-text);
+    font-family: Kodchasan;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    margin: 0;
+}
+
+.b-text {
+    font-weight: 700;
+}
+
+.b-text:hover {
+    color: #55E6A5;
+}
+
+/*-----------------------[ 10.Scrollbar CSS ]------------------------*/
+::-webkit-scrollbar {
+    width: 4px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: var(--card-sub-text);
+}
+
+::-webkit-scrollbar-corner {
+    display: none;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #55E6A5;
+    background-clip: content-box;
+}
+
+.cursor {
+    pointer-events: none;
+}
+
+.cursor__ball {
+    position: fixed;
+    top: 0;
+    left: 0;
+    mix-blend-mode: difference;
+    z-index: 1000;
+}
+
+.cursor__ball circle {
+    fill: #f7f8fa;
+}

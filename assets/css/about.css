@@ -1,0 +1,39 @@
+/*------------------------------------------------------------------
+  Project: Olivia
+  Author: Upsqode
+  Last change: 01/01/2024 
+  Primary use: 
+------------------------------------------------------------------ */
+/*-----------------------[Table of contents]------------------------ 
+1.About Page CSS
+------------------------------------------------------------------ */
+/*-----------------------[ 1.About Page CSS ]------------------------*/
+.drop-menu .menu-content .navbar-side .about_page {
+    filter: brightness(0) saturate(100%) invert(100%) sepia(23%) saturate(5408%) hue-rotate(72deg) brightness(95%) contrast(89%) !important;
+}
+.about_counter {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+.counter2 {
+    color: var(--1, #55E6A5);
+    font-size: 48px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 64px;
+}
+.experince {
+    color: var(--card-sub-text);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    text-transform: uppercase;
+    max-width: 370px;
+    margin: 0;
+}
+.count:after {
+    content: "+";
+    display: inline-block;
+}

@@ -1,0 +1,132 @@
+/*------------------------------------------------------------------
+  Project: Olivia
+  Author: Upsqode
+  Last change: 01/01/2024 
+  Primary use: 
+------------------------------------------------------------------ */
+/*-----------------------[Table of contents]------------------------ 
+1.Contact Us CSS 
+2.Form CSS
+3.Map CSS
+------------------------------------------------------------------ */
+
+/*-----------------------[ 1.Contact Us CSS ]------------------------*/
+.drop-menu .menu-content .navbar-side .contact_page {
+    filter: brightness(0) saturate(100%) invert(100%) sepia(23%) saturate(5408%) hue-rotate(72deg) brightness(95%) contrast(89%) !important;
+}
+.material-icons {
+    font-size: 24px;
+    margin-right: 10px;
+}
+.material-icons:hover {
+    color: var(--button-color-hover);
+}
+/*-----------------------[ 2.Form CSS ]------------------------*/
+.container1 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-items: space-between;
+    align-items: center;
+    border-radius: 0.4rem;
+    gap: 30px;
+}
+.form {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+.form.active label {
+    transform: translateY(-2.1rem);
+    visibility: visible;
+    font-size: 16px;
+    color: #55E6A5;
+}
+.form__input {
+    padding: 1rem 0;
+    border: none;
+    background: transparent;
+    border-bottom: 2px solid var(--one-background);
+    color: var(--card-sub-text);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+}
+.form__input:focus {
+    outline: none;
+    border-bottom: 2px solid var(--one-background);
+}
+.form__input:focus:invalid {
+    border-bottom: 2px solid #55E6A5;
+}
+.form__label {
+    color: #c1c1c1;
+    position: absolute;
+    top: 1rem;
+    pointer-events: none;
+    transition: all 0.3s;
+    color: var(--card-sub-text);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+}
+.form__btn {
+    background: #55E6A5;
+    border: 2px solid transparent;
+    margin-top: 30px;
+    border-radius: 20px;
+    transition: all 0.2s;
+    color: var(--2, #02050A);
+    text-align: center;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    padding: 18px 30px;
+}
+.send_message {
+    margin: 0;
+}
+.send_message:hover {
+    color: var(--button-color-hover);
+}
+.form__btn:hover {
+    background-color: transparent;
+    border: 2px solid #55E6A5;
+    border-radius: 0px;
+}
+.form__btn__visible {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.btn_message {
+    padding-top: 30px;
+}
+.message2 {
+    height: 120px;
+}
+.contact_number_main {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.contact_number a {
+    color: var(--card-sub-text);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    margin: 0;
+}
+.contact_number a:hover {
+    color: #55E6A5;
+}
+/*-----------------------[ 3.Map CSS ]------------------------*/
+iframe {
+    margin-top: 30px;
+    width: 100%;
+    height: 500px;
+    border-radius: 20px;
+}

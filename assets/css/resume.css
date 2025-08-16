@@ -1,0 +1,110 @@
+/*------------------------------------------------------------------
+  Project: Olivia
+  Author: Upsqode
+  Last change: 01/01/2024 
+  Primary use: 
+------------------------------------------------------------------ */
+/*-----------------------[Table of contents]------------------------ 
+1.Resume CSS 
+------------------------------------------------------------------ */
+
+/*-----------------------[ 1.Resume CSS ]------------------------*/
+.contan_main2 {
+    height: 100%;
+    padding: 100px 100px 120px 100px;
+    background-color: var(--card-background);
+}
+
+.drop-menu .menu-content .navbar-side .resume_page {
+    filter: brightness(0) saturate(100%) invert(100%) sepia(23%) saturate(5408%) hue-rotate(72deg) brightness(95%) contrast(89%) !important;
+}
+
+.education {
+    display: flex;
+    position: relative;
+}
+
+.education::before {
+    content: "";
+    color: #55E6A5;
+    border-left: 2px solid var(--card-text);
+    position: absolute;
+    top: 0;
+    left: 11px;
+    bottom: 0;
+}
+
+.education_space {
+    margin-bottom: 25px;
+}
+
+.small_yellow_border_main {
+    padding-left: 20px;
+}
+
+.bachelor {
+    color: var(--card-text);
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 30px;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.university {
+    color: var(--card-sub-text);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    margin: 0;
+    padding-bottom: 15px;
+}
+
+.cursus {
+    color: var(--card-sub-text);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    margin: 0;
+}
+
+.small_yellow_border {
+    border: 2px solid var(--card-text);
+    border-radius: 100%;
+    padding: 5px;
+    background-color: var(--card-background);
+}
+
+.small_yellow_circle {
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    background-color: #55E6A5;
+}
+
+.experience_main_text {
+    padding-top: 50px;
+}
+
+.envato_group_main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 15px;
+}
+
+.company_logo {
+    filter: var(--nav-menu-icon);
+}
+
+.company {
+    color: var(--card-sub-text);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    margin: 0;
+}

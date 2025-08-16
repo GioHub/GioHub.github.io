@@ -1,0 +1,510 @@
+/*------------------------------------------------------------------
+  Project: Olivia
+  Author: Upsqode
+  Last change: 01/01/2024 
+  Primary use: 
+------------------------------------------------------------------ */
+/*-----------------------[Table of contents]------------------------ 
+1.Portfolio Page CSS 
+2.Portfolio Pop Up Overlay CSS
+3.Portfolio Pop Up CSS
+------------------------------------------------------------------ */
+/*-----------------------[ 1.Portfolio Page CSS ]------------------------*/
+p {
+    margin: 0;
+}
+
+.drop-menu .menu-content .navbar-side .portfolio_page {
+    filter: brightness(0) saturate(100%) invert(100%) sepia(23%) saturate(5408%) hue-rotate(72deg) brightness(95%) contrast(89%) !important;
+}
+
+.content_main {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.content_portfolio {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    margin: auto;
+}
+
+.js-open-popup {
+    cursor: pointer;
+}
+
+/*-----------------------[ 2.Portfolio Pop Up Overlay CSS ]------------------------*/
+.content_portfolio .content-overlay {
+    background: rgba(0, 0, 0, 0.7);
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    opacity: 0;
+    -webkit-transition: all 0.4s ease-in-out 0s;
+    -moz-transition: all 0.4s ease-in-out 0s;
+    transition: all 0.4s ease-in-out 0s;
+}
+
+.content_portfolio:hover .content-overlay {
+    opacity: 1;
+}
+
+.content-image {
+    width: 100%;
+}
+
+.content-details {
+    position: absolute;
+    text-align: center;
+    padding-left: 1em;
+    padding-right: 1em;
+    width: 100%;
+    top: 50%;
+    left: 50%;
+    opacity: 0;
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    -webkit-transition: all 0.3s ease-in-out 0s;
+    -moz-transition: all 0.3s ease-in-out 0s;
+    transition: all 0.3s ease-in-out 0s;
+}
+
+.content_portfolio:hover .content-details {
+    top: 50%;
+    left: 50%;
+    opacity: 1;
+}
+
+.content-details h3 {
+    color: #fff;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.8em;
+    text-transform: uppercase;
+    margin: 0;
+    font-size: 24px;
+}
+
+.content-details p {
+    color: #fff;
+    font-size: 18px;
+    margin: 0;
+}
+
+.fadeIn-bottom {
+    top: 80%;
+}
+
+.project_name {
+    color: var(--card-text);
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 26px;
+    padding: 10px 0;
+    margin: 0;
+    text-align: center;
+}
+
+.project_name_sub {
+    color: var(--card-sub-text);
+    font-family: Kodchasan;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    text-transform: uppercase;
+    margin: 0;
+    text-align: center;
+}
+
+/*-----------------------[ 3.Portfolio Pop Up CSS ]------------------------*/
+.wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.custom-popup {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--background-blur);
+    backdrop-filter: blur(5px);
+    z-index: 150;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 110.145ms 0ms;
+}
+
+.custom-popup__holder {
+    max-width: 850px;
+    width: 100%;
+    height: 100vh;
+    background: var(--card-background);
+    padding: 30px;
+    position: relative;
+    opacity: 0;
+    transform: translateY(-100px);
+    transition: opacity 400ms, transform 400ms;
+    transition-delay: 300ms;
+}
+
+.custom-popup__close {
+    position: absolute;
+    top: 20px;
+    right: 0;
+    transform: translate(20%, -50%);
+    cursor: pointer;
+    transition: 0.3s transform;
+    width: 64px;
+    height: 64px;
+    background-color: #FFF;
+    border-radius: 50%;
+    filter: drop-shadow(0px 10px 20px rgba(2, 5, 10, 0.40));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+}
+
+.custom-popup.is-active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.custom-popup.is-active .custom-popup__holder {
+    opacity: 1;
+    transform: translateY(0);
+    overflow-y: scroll;
+}
+
+.portfolio_big_img {
+    max-width: 100%;
+}
+
+.corporate_main {
+    padding: 20px 0;
+}
+
+.corporate_sub {
+    padding-bottom: 20px;
+}
+
+.project_name {
+    color: var(--card-text);
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 26px;
+    padding: 10px 0;
+    margin: 0;
+}
+
+.project_name_sub {
+    color: var(--card-sub-text);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.cuberto_main {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+}
+
+.created_by,
+.cuberto {
+    color: var(--card-sub-text);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px;
+    margin: 0;
+}
+
+.blandit_text {
+    color: var(--card-sub-text);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    margin: 0;
+}
+
+.project_second {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.project_sub_images {
+    border-radius: 20px;
+    margin: 30px 0;
+    max-width: 100%;
+}
+
+.pop_up_footer {
+    padding-top: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    position: relative;
+    border-radius: 50%;
+    flex-direction: column-reverse;
+}
+
+.content .shareButton.main .share,
+.content .shareButton.main .close,
+.content .shareButton.main .check {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    transition: all 150ms;
+}
+
+.content .shareButton.main .share,
+.content .shareButton.main.open .close,
+.content .shareButton.main.sent .check {
+    transform: rotate(0) scale(1);
+    opacity: 1;
+}
+
+.content .shareButton.main .close,
+.content .shareButton.main.open .share,
+.content .shareButton.main .check,
+.content .shareButton.main.sent .share {
+    opacity: 0;
+    transform: rotate(90deg) scale(0);
+}
+
+.shareButton,
+.shareButton.open {
+    border: none;
+    border-radius: 50%;
+    background: var(--card-background);
+    padding: 1rem;
+    overflow: hidden;
+    outline: none;
+    margin: 0.5rem;
+    border: 2px solid var(--one-background);
+    width: 24px;
+    height: 24px;
+    box-sizing: content-box;
+    transition: all 200ms;
+    position: relative;
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+.shareButton:hover,
+.shareButton.open:hover {
+    transform: scale(1.1) translateY(-3px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+    border: 2px solid#55E6A5;
+}
+
+.shareButton svg,
+.shareButton.open svg {
+    display: block;
+    fill: var(--card-text);
+    width: 24px;
+    height: 24px;
+    opacity: 1;
+    transition: all 150ms;
+    transform: scale(1);
+}
+
+.fb,
+.shareButton.open.ig {
+    transition-delay: 100ms;
+}
+
+.tw,
+.shareButton.open.tw {
+    transition-delay: 50ms;
+}
+
+.ig,
+.shareButton.open.fb {
+    transition-delay: 0ms;
+}
+
+.fb,
+.tw,
+.ig {
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    transform: scale(0);
+}
+
+.fb svg,
+.tw svg,
+.ig svg {
+    width: 0;
+    height: 0;
+    opacity: 0;
+    transform: scale(0);
+}
+
+.mfp-iframe-holder .mfp-close,
+.mfp-image-holder .mfp-close:hover {
+    border: none;
+}
+
+.mfp-iframe-holder .mfp-close,
+.mfp-image-holder .mfp-close {
+    font-size: 45px;
+    color: var(--card-text);
+}
+
+.mfp-bg {
+    background: var(--background-blur);
+    backdrop-filter: blur(5px);
+}
+
+.link {
+    cursor: pointer;
+}
+
+/*-----------------------[ 23.Portfolio gallery CSS ]------------------------*/
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.gallery img {
+    width: 100%;
+    height: auto;
+    padding: 10px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.gallery .full {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    width: 100vw;
+    height: 100%;
+    object-fit: contain;
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.gallery img.full:hover {
+    z-index: 999;
+    transform: none;
+}
+
+.city_gallery {
+    text-align: center;
+    color: var(--card-text);
+    font-size: 25px;
+    font-weight: 500;
+    padding: 30px 0;
+    margin: 0;
+}
+
+.overlay_gallery {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--background-blur);
+    transition: opacity 500ms;
+    visibility: hidden;
+    opacity: 0;
+    backdrop-filter: blur(5px);
+    z-index: 100;
+}
+
+.overlay_gallery:target {
+    visibility: visible;
+    opacity: 1;
+}
+
+.popup_gallery {
+    padding: 20px;
+    background: var(--card-background);
+    border-radius: 5px;
+    position: relative;
+    transition: all 5s ease-in-out;
+    width: 100%;
+    max-width: 800px;
+    height: 100vh;
+    margin: 0 auto;
+    overflow-y: auto;
+}
+
+.popup_gallery .close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    transition: all 200ms;
+    font-size: 30px;
+    font-weight: bold;
+    text-decoration: none;
+    color: var(--card-text);
+}
+
+.popup_gallery .close:hover {
+    color: #55E6A5;
+}
+
+@media screen and (max-width: 850px) {
+    .popup_gallery {
+        max-width: 90%;
+        width: 90%;
+        height: 90vh;
+        top: 45px;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .gallery {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media only screen and (max-width: 400px) {
+    .gallery {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+}

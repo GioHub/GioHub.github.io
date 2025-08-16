@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olivia-Resume</title>
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.6.0/remixicon.css">
+    <link rel="stylesheet" href="../assets/css/swap.css">
+    <link rel="stylesheet" href="../assets/css/aos.css">
+    <link rel="stylesheet" href="../assets/css/boostrap.min.css">
+    <link rel="stylesheet" href="../assets/css/slick.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/resume.css">
+    <link rel="stylesheet" href="../assets/css/media_query.css">
+</head>
+
+<body>
+    <div class="site_content">
+        <!-- ====================================== Preloader ===================================== -->
+        <div class="wrapper">
+            <div id="loader-wrapper">
+                <div id="loader">
+                    <svg viewBox="0 0 1320 300">
+                        <text x="50%" y="50%" dy=".35em" text-anchor="middle">Olivia </text>
+                    </svg>
+                </div>
+                <div class="loader-section section-left"></div>
+                <div class="loader-section section-right"></div>
+            </div>
+        </div>
+        <!-- ====================================== Preloader End ===================================== -->
+        <!-- ====================================== Cursor ===================================== -->
+        <div class="cursor"></div>
+        <!-- ====================================== Cursor End ===================================== -->
+        <div class="row home-content-row">
+            <!-- ====================================== Section Fix Image ===================================== -->
+            <div class="col-xxl-5 col-lg-5 col-md-5  col-12  olivia-left-fixed-image p-0 position-relative">
+                <div class="olivia-home-image" data-aos="fade-right">
+                    <div id="particles-js"></div>
+                    <!-- ============================ Dark Light Mode ======================= -->
+                    <div class=ul-header id="ul-header1">
+                        <div class="mode" onclick=myFunction() title="Toggle Mode">
+                            <div class=icon-container>
+                                <i id=sunIcon class="fa-solid fa-sun fa-spin icon"></i>
+                                <i id=moonIcon class="fa-solid fa-moon icon hidden"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- =========================== Dark Light End ========================== -->
+                    <div class="social-menu">
+                        <ul>
+                            <li>
+                                <a href=https://www.facebook.com target=blank>
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href=https://www.instagram.com target=blank>
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href=https://in.linkedin.com target=blank>
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href=https://wa.me/+12345678899 target=blank>
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- ====================================== Section Fix Image End ===================================== -->
+            <!-- ====================================== Section Contain Menu ===================================== -->
+            <div class="col-12 col-md-12 col-lg-7 col-xxl-7 salva-home-content dark-home-content p-0">
+                <header>
+                    <div class="navbar navbar-light">
+                        <div class="logo navbar-brand">
+                            <a href=index.html><img src=../assets/images/logo.png alt=logo></a>
+                            <div class="ul-header ul-header2">
+                                <div class="mode" onclick=myFunction() title="Toggle Mode">
+                                    <div class=icon-container>
+                                        <i id=sunIcon2 class="fa-solid fa-sun fa-spin"></i>
+                                        <i id=moonIcon2 class="fa-solid fa-moon icon hidden"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class=bnt-navbar>
+                            <a class="menu-touch menu" data-toggle=collapse href=#multiCollapseExample1 role=button
+                                aria-expanded=false>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </a>
+                        </div>
+                        <div class=drop-menu>
+                            <nav class=menu-content>
+                                <a href=index.html>
+                                    <img class="logo-menu-img" src="../assets/images/logo.png" alt="logo">
+                                </a>
+                                <ul class="navbar-side" id=navbarSide>
+                                    <li class="btn-clique">
+                                        <img class="menu_icons" src="../assets/images/home_icon.svg"
+                                            alt="home_icon">
+                                        <a class=item-menu href=index.html>Home</a>
+                                    </li>
+                                    <li class=btn-clique>
+                                        <img class="menu_icons" src="../assets/images/about_icon.svg"
+                                            alt="about_icon">
+                                        <a class=item-menu href=about.html>About Me</a>
+                                    </li>
+                                    <li class="btn-clique resume_page">
+                                        <img class="menu_icons" src="../assets/images/resume_icon.svg"
+                                            alt="resume_icon">
+                                        <a class=item-menu href=resume.html>Resume</a>
+                                    </li>
+                                    <li class=btn-clique>
+                                        <img class="menu_icons" src="../assets/images/services_icon.svg"
+                                            alt="services_icon">
+                                        <a class=item-menu href=services.html>Services</a>
+                                    </li>
+                                    <li class="bnt-pj btn-clique">
+                                        <img class="menu_icons" src="../assets/images/skills_icon.svg"
+                                            alt="skills_icon">
+                                        <a class=item-menu href=skills.html>Skills</a>
+                                    </li>
+                                    <li class=btn-clique>
+                                        <img class="menu_icons" src="../assets/images/portfolio_icon.svg"
+                                            alt="portfolio_icon">
+                                        <a class=item-menu href=portfolio.html>Portfolio</a>
+                                    </li>
+                                    <li class=btn-clique>
+                                        <img class="menu_icons" src="../assets/images/testimonial_icon.svg"
+                                            alt="testimonial_icon">
+                                        <a class=item-menu href=testimonials.html>Testimonial</a>
+                                    </li>
+                                    <li class=btn-clique>
+                                        <img class="menu_icons" src="../assets/images/blog_icon.svg"
+                                            alt="blog_icon">
+                                        <a class=item-menu href=blog.html>Blogs</a>
+                                    </li>
+                                    <li class=btn-clique>
+                                        <img class="menu_icons" src="../assets/images/contact_icon.svg"
+                                            alt="contact_icon">
+                                        <a class=item-menu href=contact.html>Contact</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </header>
+                <div class="contan_main2">
+                    <section class="oliva-intro tabcontent">
+                        <div class="intro_main">
+                            <h1 class="d-none" data-aos="fade-up">demo</h1>
+                            <h2 class="intro" data-aos="fade-up">Resume</h2>
+                        </div>
+                        <h2 class="moswa" data-aos="fade-up">Education</h2>
+                        <h3 class="passionate" data-aos="fade-up">Dui ac erat in nec ut at viverra. Tristique morbi
+                            gravida pulvinar aenean ornare cras rhoncus volutpat a. Tempor cras convallis neque auctor
+                            ipsum cursus senectus. Bibendum nunc a fringilla vitae etiam eget volutpat felis
+                            scelerisque.
+                        </h3>
+                        <div class="education position-relative education_space">
+                            <div class="side_circle_ring" data-aos="fade-up">
+                                <div class="small_yellow_border">
+                                    <div class="small_yellow_circle"></div>
+                                </div>
+                            </div>
+                            <div class="small_yellow_border_main">
+                                <h3 class="bachelor" data-aos="fade-up">Bachelor of Science in Information Technology
+                                </h3>
+                                <h4 class="university" data-aos="fade-up">Cambridge University / 2010 - 2014</h4>
+                                <h5 class="cursus" data-aos="fade-up">Cursus ut consectetur rhoncus ut nibh. Bibendum at
+                                    sit a tempor, laoreet varius et. Sed ut egestas vitae dolor nulla non Ullamcorper
+                                    amet nibh.
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="education position-relative education_space">
+                            <div class="side_circle_ring" data-aos="fade-up">
+                                <div class="small_yellow_border">
+                                    <div class="small_yellow_circle"></div>
+                                </div>
+                            </div>
+                            <div class="small_yellow_border_main">
+                                <h3 class="bachelor" data-aos="fade-up">Bachelor of Science in Information Technology
+                                </h3>
+                                <h4 class="university" data-aos="fade-up">Cambridge University / 2014 - 2016</h4>
+                                <h5 class="cursus" data-aos="fade-up">Porttitor euismod at semper ut massa. Lorem varius
+                                    magna volutpat nunc. Et faucibus scelerisque donec augue eleifenda morbi dolor lorem
+                                    semper.
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="education position-relative">
+                            <div class="side_circle_ring" data-aos="fade-up">
+                                <div class="small_yellow_border">
+                                    <div class="small_yellow_circle"></div>
+                                </div>
+                            </div>
+                            <div class="small_yellow_border_main">
+                                <h3 class="bachelor" data-aos="fade-up">Bachelor of Science in Information Technology
+                                </h3>
+                                <h4 class="university" data-aos="fade-up">Cambridge University / 2016 - 2018</h4>
+                                <h5 class="cursus" data-aos="fade-up">Adipiscing sed magna tempus arcu morbi. Ipsum
+                                    pellentesque lorem suscipit in. Hendrerit rhoncus quis tempor urna pharetra ut erat.
+                                </h5>
+                            </div>
+                        </div>
+                        <h2 class="moswa experience_main_text" data-aos="fade-up">Experience</h2>
+                        <h3 class="passionate" data-aos="fade-up">Dui ac erat in nec ut at viverra. Tristique morbi
+                            gravida pulvinar aenean ornare cras rhoncus volutpat a. Tempor cras convallis neque auctor
+                            ipsum cursus senectus. Bibendum nunc a fringilla vitae etiam eget volutpat felis
+                            scelerisque.
+                        </h3>
+                        <div class="education position-relative education_space">
+                            <div class="side_circle_ring" data-aos="fade-up">
+                                <div class="small_yellow_border">
+                                    <div class="small_yellow_circle"></div>
+                                </div>
+                            </div>
+                            <div class="small_yellow_border_main">
+                                <div class="envato_group_main">
+                                    <div>
+                                        <h3 class="bachelor" data-aos="fade-up">lead design & development</h3>
+                                        <h4 class="company" data-aos="fade-up">Envato / 2020 - Current</h4>
+                                    </div>
+                                    <img class="company_logo" src="../assets/images/envato.png" alt="envato"
+                                        data-aos="fade-up">
+                                </div>
+                                <h5 class="cursus" data-aos="fade-up">Cursus ut consectetur rhoncus ut nibh. Bibendum at
+                                    sit a tempor, laoreet varius et. Sed ut egestas vitae dolor nulla non Ullamcorper
+                                    amet nibh.
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="education position-relative education_space">
+                            <div class="side_circle_ring" data-aos="fade-up">
+                                <div class="small_yellow_border">
+                                    <div class="small_yellow_circle"></div>
+                                </div>
+                            </div>
+                            <div class="small_yellow_border_main ">
+                                <div class="envato_group_main">
+                                    <div>
+                                        <h3 class="bachelor" data-aos="fade-up">senior design & development</h3>
+                                        <h4 class="company" data-aos="fade-up">Apple / 2019 - 2020</h4>
+                                    </div>
+                                    <img class="company_logo" src="../assets/images/apple.png" alt="apple"
+                                        data-aos="fade-up">
+                                </div>
+                                <h5 class="cursus" data-aos="fade-up">Porttitor euismod at semper ut massa. Lorem varius
+                                    magna volutpat nunc. Et faucibus scelerisque donec augue eleifenda morbi dolor lorem
+                                    semper.
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="education position-relative">
+                            <div class="side_circle_ring" data-aos="fade-up">
+                                <div class="small_yellow_border">
+                                    <div class="small_yellow_circle"></div>
+                                </div>
+                            </div>
+                            <div class="small_yellow_border_main">
+                                <div class="envato_group_main">
+                                    <div>
+                                        <h3 class="bachelor" data-aos="fade-up">junior design & development</h3>
+                                        <h4 class="company" data-aos="fade-up">Twitter / 2018 - 2019</h4>
+                                    </div>
+                                    <img class="company_logo" src="../assets/images/twitter.png" alt="twitter"
+                                        data-aos="fade-up">
+                                </div>
+                                <h5 class="cursus" data-aos="fade-up">Adipiscing sed magna tempus arcu morbi. Ipsum
+                                    pellentesque lorem suscipit in. Hendrerit rhoncus quis tempor urna pharetra ut erat.
+                                </h5>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <!-- ====================================== Section Contain Menu End ===================================== -->
+                <!-- ====================================== Footer Section ===================================== -->
+                <footer class="olivia-footer-wrap">
+                    <p class="olivia-copyright-content">© Olivia 2024. All rights reserved by
+                        <a href="https://themeforest.net/user/the_krishna/portfolio" class="b-text"
+                            target="_blank">The_Krishna.</a>
+                    </p>
+                </footer>
+                <!-- ====================================== Footer Section End ===================================== -->
+            </div>
+        </div>
+    </div>
+    <script src="../assets/javascript/jquery.min.js"></script>
+    <script src="../assets/javascript/aos.js"></script>
+    <script src="../assets/javascript/cursor.js"></script>
+    <script src="../assets/javascript/bootstrap.bundle.min.js"></script>
+    <script src="../assets/javascript/slick.min.js"></script>
+    <script src="../assets/javascript/spider_animation/spider_animation.js"></script>
+    <script src="../assets/javascript/script.js"></script>
+    <script>
+        AOS.init({
+            duration: 1600,
+            container: '.scroll-container',
+        })
+        $(window).on("scroll", function () {
+            AOS.init();
+        });
+    </script>
+</body>
+
+</html>

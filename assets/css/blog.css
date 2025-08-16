@@ -1,0 +1,441 @@
+/*------------------------------------------------------------------
+  Project: Olivia
+  Author: Upsqode
+  Last change: 01/01/2024 
+  Primary use: 
+------------------------------------------------------------------ */
+/*-----------------------[Table of contents]------------------------ 
+1.Blog Page CSS
+2.Blog Box CSS 
+3.View More Btn CSS
+4.Pop Up Design CSS
+5.Share Btn CSS 
+6.Close Btn CSS
+------------------------------------------------------------------ */
+/*-----------------------[ 1.Blog Page CSS ]------------------------*/
+.drop-menu .menu-content .navbar-side .blog_page {
+    filter: brightness(0) saturate(100%) invert(100%) sepia(23%) saturate(5408%) hue-rotate(72deg) brightness(95%) contrast(89%) !important;
+}
+/*-----------------------[ 2.Blog Box CSS ]------------------------*/
+.blog_section_main {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+.blog_date {
+    width: 64px;
+    height: 64px;
+    background: var(--5, #FFF);
+    box-shadow: 0px 10px 20px 0px rgba(2, 5, 10, 0.40);
+    padding: 10px;
+}
+.date {
+    color: var(--2, #02050A);
+    text-align: center;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    margin: 0;
+}
+.month {
+    color: var(--2, #02050A);
+    text-align: center;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px;
+    text-transform: uppercase;
+    margin: 0;
+}
+.blog_img {
+    background-image: url(..//images/blog_img1.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 250px;
+    padding: 12px;
+    display: flex;
+    justify-content: flex-end;
+    transition: all 0.5s ease-in-out;
+}
+.blog_img2 {
+    background-image: url(..//images/blog_img2.png);
+}
+.blog_img3 {
+    background-image: url(..//images/blog_img3.png);
+}
+.blog_img4 {
+    background-image: url(..//images/blog_img4.png);
+}
+.blog_img5 {
+    background-image: url(..//images/blog_img5.png);
+    background-position: top center;
+}
+.blog_img6 {
+    background-image: url(..//images/blog_img6.png);
+}
+.blog_img7 {
+    background-image: url(..//images/blog_img1.png);
+}
+.blog_img8 {
+    background-image: url(..//images/blog_img2.png);
+}
+.blog_img:hover {
+    filter: drop-shadow(0px 10px 20px rgba(2, 5, 10, 0.40));
+    transition: all 0.5s ease-in-out;
+}
+.become {
+    color: var(--card-text);
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 26px;
+    margin: 0;
+    padding: 10px 0;
+}
+.web_development {
+    color: var(--card-sub-text);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    text-transform: uppercase;
+    margin: 0;
+}
+/*-----------------------[ 3.View More Btn CSS ]------------------------*/
+.view_more_main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 40px;
+}
+#text {
+    display: none;
+}
+.view_more {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    padding-top: 30px;
+}
+#toggle {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+/*-----------------------[ 4.Pop Up Design CSS ]------------------------*/
+.logo_design {
+    color: var(--card-text);
+    text-align: center;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 32px;
+    margin: 0;
+    padding-bottom: 15px;
+}
+.graphic {
+    color: var(--card-sub-text);
+    text-align: center;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    text-transform: uppercase;
+    margin: 0;
+    padding-bottom: 25px;
+}
+.blog_pop_up_main {
+    text-align: center;
+}
+.blog_pop_up {
+    border-radius: 20px;
+    margin-bottom: 30px;
+    max-width: 100%;
+}
+.nunc {
+    color: var(--card-sub-text);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+}
+.trigger {
+    cursor: pointer;
+}
+.modal-wrapper {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(131deg, rgba(9, 16, 26, 0.85) 0%, rgba(9, 16, 26, 0.60) 100%);
+    backdrop-filter: blur(5px);
+    visibility: hidden;
+    opacity: 0;
+    -webkit-transition: all 0.25s ease-in-out;
+    -moz-transition: all 0.25s ease-in-out;
+    -o-transition: all 0.25s ease-in-out;
+    transition: all 0.25s ease-in-out;
+}
+.modal-wrapper.open {
+    opacity: 1;
+    visibility: visible;
+    z-index: 1000;
+}
+.modal {
+    max-width: 850px;
+    width: 100%;
+    height: 100vh;
+    display: block;
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    background: #fff;
+    opacity: 0;
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+}
+.modal-wrapper.open .modal {
+    opacity: 1;
+}
+.content3 {
+    padding: 30px;
+    background-color: var(--card-background);
+}
+.blog-pop-up-list-main ul {
+    padding: 10px 0 30px 30px;
+}
+.blog-pop-up-list li {
+    color: var(--card-sub-text);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 30px;
+}
+.small_blog {
+    padding: 30px;
+    background-color: var(--one-background);
+}
+.integer {
+    color: var(--card-sub-text);
+    font-size: 16px;
+    font-style: italic;
+    font-weight: 500;
+    line-height: 24px;
+    margin: 0;
+    padding-bottom: 20px;
+}
+.line_client {
+    display: flex;
+    align-items: center;
+}
+.line {
+    border-top: 2px solid #55E6A5;
+    width: 60px;
+}
+.jordon {
+    color: var(--card-text);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px;
+    margin: 0;
+    padding-left: 10px;
+}
+.viverra {
+    color: var(--card-text);
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 30px;
+    margin: 0;
+    padding: 30px 0 20px;
+}
+.vel {
+    font-style: normal;
+}
+.eget {
+    padding: 30px 0;
+    font-style: normal;
+}
+.blog_img_main {
+    padding: 0 15px;
+}
+.blog_slider_img {
+    border-radius: 20px;
+    max-width: 100%;
+}
+.blog_next_prev {
+    margin: 0;
+    color: var(--card-text);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: 0.8px;
+}
+.next_prev_arrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.next_prev_share {
+    border-top: 2px solid var(--one-background);
+    border-bottom: 2px solid var(--one-background);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+/*-----------------------[ 5.Share Btn CSS ]------------------------*/
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    position: relative;
+    border-radius: 50%;
+}
+.content .shareButton.main .share,
+.content .shareButton.main .close,
+.content .shareButton.main .check {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    transition: all 150ms;
+}
+.content .shareButton.main .share,
+.content .shareButton.main.open .close,
+.content .shareButton.main.sent .check {
+    transform: rotate(0) scale(1);
+    opacity: 1;
+}
+.content .shareButton.main .close,
+.content .shareButton.main.open .share,
+.content .shareButton.main .check,
+.content .shareButton.main.sent .share {
+    opacity: 0;
+    transform: rotate(90deg) scale(0);
+}
+.shareButton,
+.shareButton.open {
+    border: none;
+    border-radius: 50%;
+    background: var(--card-background);
+    padding: 1rem;
+    overflow: hidden;
+    outline: none;
+    margin: 5px;
+    border: 2px solid var(--one-background);
+    width: 24px;
+    height: 24px;
+    box-sizing: content-box;
+    transition: all 200ms;
+    position: relative;
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+.shareButton:hover,
+.shareButton.open:hover {
+    transform: scale(1.1) translateY(-3px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+    border: 2px solid#55E6A5;
+}
+.shareButton svg,
+.shareButton.open svg {
+    display: block;
+    fill: var(--card-text);
+    width: 24px;
+    height: 24px;
+    opacity: 1;
+    transition: all 150ms;
+    transform: scale(1);
+}
+.fb,
+.shareButton.open.ig {
+    transition-delay: 100ms;
+}
+.tw,
+.shareButton.open.tw {
+    transition-delay: 50ms;
+}
+.ig,
+.shareButton.open.fb {
+    transition-delay: 0ms;
+}
+.fb,
+.tw,
+.ig {
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    transform: scale(0);
+}
+.fb svg,
+.tw svg,
+.ig svg {
+    width: 0;
+    height: 0;
+    opacity: 0;
+    transform: scale(0);
+}
+/*-----------------------[ 6.Close Btn CSS ]------------------------*/
+.page-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.circle-wrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin-top: 30px;
+}
+.close-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--card-text);
+    text-align: center;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: 0.9px;
+}
+.circle_close {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    padding: 2.5px;
+    background-clip: content-box;
+    animation: spin 10s linear infinite;
+}
+.circle-wrapper:hover .circle_close {
+    animation: spin 2s linear infinite;
+}
+.warning {
+    border: 2.5px dashed #55E6A5;
+}
+@keyframes spin {
+    100% {
+        transform: rotateZ(360deg);
+    }
+}
