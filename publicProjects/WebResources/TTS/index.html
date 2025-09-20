@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Texto a Audio con Pausas (.webm)</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9fafb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .container {
+      max-width: 600px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    textarea {
+      width: 100%;
+      height: 120px;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    select, input, button {
+      margin: 5px 0;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1e40af;
+    }
+    #downloadLink {
+      display: none;
+      margin-top: 15px;
+      color: #2563eb;
+      text-decoration: none;
+    }
+    audio {
+      margin-top: 15px;
+      width: 100%;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Texto a Audio 🎙️ con Pausas (.webm)</h2>
+    <textarea id="textInput" placeholder="Escribe tu texto aquí... Usa [pause=2] para pausar 2 segundos"></textarea>
+    <br>
+    <label for="voiceSelect">Voz:</label>
+    <select id="voiceSelect"></select>
+    <br>
+    <label for="rate">Velocidad:</label>
+    <input type="range" id="rate" min="0.5" max="2" step="0.1" value="1">
+    <span id="rateValue">1</span>
+    <br><br>
+    <button id="playBtn">▶ Reproducir & Grabar</button>
+    <button id="stopBtn">⏹ Detener</button>
+    <br>
+    <audio id="audioPlayer" controls style="display:none;"></audio>
+    <br>
+    <a id="downloadLink" download="texto-audio.webm">⬇ Descargar Audio</a>
+  </div>
+
+  <script>
+    const textInput = document.getElementById('textInput');
+    const voiceSelect = document.getElementById('voiceSelect');
+    const rate = document.getElementById('rate');
+    const rateValue = document.getElementById('rateValue');
+    const playBtn = document.getElementById('playBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const downloadLink = document.getElementById('downloadLink');
+    const audioPlayer = document.getElementById('audioPlayer');
+
+    let voices = [];
+    let mediaRecorder;
+    let audioChunks = [];
+    let stopRequested = false;
+
+    function loadVoices() {
+      voices = speechSynthesis.getVoices();
+      voiceSelect.innerHTML = '';
+      voices.forEach((voice, i) => {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = `${voice.name} (${voice.lang})`;
+        voiceSelect.appendChild(option);
+      });
+    }
+
+    loadVoices();
+    speechSynthesis.onvoiceschanged = loadVoices;
+
+    // Función que habla con soporte de pausas [pause=n]
+    function speakWithPauses(text, voice, rate, onComplete) {
+      const parts = text.split(/\[pause=(\d+)\]/);
+      let index = 0;
+
+      function speakNext() {
+        if (stopRequested || index >= parts.length) {
+          if (onComplete) onComplete();
+          return;
+        }
+
+        if (index % 2 === 0) {
+          const chunk = parts[index].trim();
+          if (chunk) {
+            const utterance = new SpeechSynthesisUtterance(chunk);
+            utterance.voice = voice;
+            utterance.rate = rate;
+            utterance.onend = () => {
+              index++;
+              speakNext();
+            };
+            speechSynthesis.speak(utterance);
+          } else {
+            index++;
+            speakNext();
+          }
+        } else {
+          const pauseTime = parseInt(parts[index], 10) * 1000;
+          setTimeout(() => {
+            index++;
+            speakNext();
+          }, pauseTime);
+        }
+      }
+
+      speakNext();
+    }
+
+    playBtn.addEventListener('click', () => {
+      const text = textInput.value;
+      if (!text.trim()) return alert("Por favor, escribe un texto.");
+
+      stopRequested = false;
+      downloadLink.style.display = "none";
+      audioPlayer.style.display = "none";
+
+      const selectedVoice = voices[voiceSelect.value];
+      const rateValue = parseFloat(rate.value);
+
+      // Preparar grabación
+      const audioContext = new AudioContext();
+      const destination = audioContext.createMediaStreamDestination();
+      const oscillator = audioContext.createOscillator(); // Dummy stream activator
+      oscillator.connect(destination);
+      oscillator.start();
+      oscillator.stop();
+
+      mediaRecorder = new MediaRecorder(destination.stream);
+      audioChunks = [];
+
+      mediaRecorder.ondataavailable = e => {
+        if (e.data.size > 0) audioChunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        if (!stopRequested) {
+          const blob = new Blob(audioChunks, { type: "audio/webm" });
+          const url = URL.createObjectURL(blob);
+          // Mostrar reproductor
+          audioPlayer.src = url;
+          audioPlayer.style.display = "block";
+          // Mostrar descarga
+          downloadLink.href = url;
+          downloadLink.style.display = "block";
+        }
+      };
+
+      mediaRecorder.start();
+
+      speakWithPauses(text, selectedVoice, rateValue, () => {
+        if (mediaRecorder && mediaRecorder.state !== "inactive") {
+          mediaRecorder.stop();
+        }
+      });
+    });
+
+    stopBtn.addEventListener('click', () => {
+      stopRequested = true;
+      speechSynthesis.cancel();
+      if (mediaRecorder && mediaRecorder.state !== "inactive") {
+        mediaRecorder.stop();
+      }
+    });
+
+    rate.addEventListener('input', () => {
+      rateValue.textContent = rate.value;
+    });
+  </script>
+</body>
+</html>

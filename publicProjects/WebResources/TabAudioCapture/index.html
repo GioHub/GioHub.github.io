@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Grabadora de Voz 🎤</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9fafb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .container {
+      max-width: 500px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    button {
+      margin: 8px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      font-size: 15px;
+      cursor: pointer;
+      color: white;
+    }
+    #startBtn { background: #16a34a; }
+    #stopBtn { background: #dc2626; }
+    #downloadWebm, #downloadWav {
+      display: none;
+      margin: 10px;
+      color: #2563eb;
+      text-decoration: none;
+    }
+    audio {
+      margin-top: 15px;
+      width: 100%;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Grabadora de Voz 🎤</h2>
+    <p>Haz clic en "Iniciar" para grabar desde el micrófono.</p>
+    <button id="startBtn">▶ Iniciar Grabación</button>
+    <button id="stopBtn" disabled>⏹ Detener</button>
+    <br>
+    <audio id="audioPlayer" controls style="display:none;"></audio>
+    <br>
+    <a id="downloadWebm" download="grabacion.webm">⬇ Descargar .webm</a>
+    <a id="downloadWav" download="grabacion.wav">⬇ Descargar .wav</a>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById("startBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const audioPlayer = document.getElementById("audioPlayer");
+    const downloadWebm = document.getElementById("downloadWebm");
+    const downloadWav = document.getElementById("downloadWav");
+
+    let mediaRecorder;
+    let audioChunks = [];
+
+    startBtn.addEventListener("click", async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+
+      audioChunks = [];
+      mediaRecorder.ondataavailable = e => {
+        if (e.data.size > 0) audioChunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = async () => {
+        const blobWebm = new Blob(audioChunks, { type: "audio/webm" });
+        const urlWebm = URL.createObjectURL(blobWebm);
+
+        // Mostrar reproductor con el .webm
+        audioPlayer.src = urlWebm;
+        audioPlayer.style.display = "block";
+
+        // Link para descargar .webm
+        downloadWebm.href = urlWebm;
+        downloadWebm.style.display = "inline-block";
+
+        // Convertir a WAV
+        const arrayBuffer = await blobWebm.arrayBuffer();
+        const audioCtx = new AudioContext();
+        const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+        const wavBlob = audioBufferToWav(audioBuffer);
+        const urlWav = URL.createObjectURL(wavBlob);
+
+        // Link para descargar .wav
+        downloadWav.href = urlWav;
+        downloadWav.style.display = "inline-block";
+      };
+
+      mediaRecorder.start();
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+    });
+
+    stopBtn.addEventListener("click", () => {
+      mediaRecorder.stop();
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+    });
+
+    // Conversión AudioBuffer → WAV
+    function audioBufferToWav(buffer) {
+      const numOfChan = buffer.numberOfChannels,
+            length = buffer.length * numOfChan * 2 + 44,
+            bufferOut = new ArrayBuffer(length),
+            view = new DataView(bufferOut),
+            channels = [],
+            sampleRate = buffer.sampleRate;
+      let offset = 0;
+      let pos = 0;
+
+      // Escribir cabecera WAV
+      setUint32(0x46464952); // "RIFF"
+      setUint32(length - 8); // file length - 8
+      setUint32(0x45564157); // "WAVE"
+
+      setUint32(0x20746d66); // "fmt "
+      setUint32(16); // length = 16
+      setUint16(1); // PCM
+      setUint16(numOfChan);
+      setUint32(sampleRate);
+      setUint32(sampleRate * 2 * numOfChan);
+      setUint16(numOfChan * 2);
+      setUint16(16);
+
+      setUint32(0x61746164); // "data"
+      setUint32(length - pos - 4);
+
+      // Escribir datos de audio
+      for (let i = 0; i < buffer.numberOfChannels; i++)
+        channels.push(buffer.getChannelData(i));
+
+      while (pos < length) {
+        for (let i = 0; i < numOfChan; i++) {
+          const sample = Math.max(-1, Math.min(1, channels[i][offset]));
+          const int16 = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+          view.setInt16(pos, int16, true);
+          pos += 2;
+        }
+        offset++;
+      }
+
+      return new Blob([bufferOut], { type: "audio/wav" });
+
+      function setUint16(data) { view.setUint16(pos, data, true); pos += 2; }
+      function setUint32(data) { view.setUint32(pos, data, true); pos += 4; }
+    }
+  </script>
+</body>
+</html>
