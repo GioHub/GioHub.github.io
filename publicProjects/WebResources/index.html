@@ -9,6 +9,9 @@
       background: #f9fafb;
       margin: 0;
       padding: 20px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
     header {
       text-align: center;
@@ -27,6 +30,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 20px;
+      flex-grow: 1;
     }
     .card {
       background: #fff;
@@ -35,6 +39,7 @@
       padding: 20px;
       text-align: center;
       transition: transform 0.2s ease;
+      height: 180px;
     }
     .card:hover {
       transform: translateY(-4px);
@@ -62,6 +67,12 @@
     .card a:hover {
       background: #1e40af;
     }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #6b7280;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
@@ -74,20 +85,24 @@
     <div class="card">
       <h2>📸 Capturador de Video</h2>
       <p>Extrae capturas de pantalla de un video en miniaturas o tamaño completo.</p>
-      <a href="VideoClipper/index.html">Abrir</a>
+      <a href="video-capturas.html">Abrir</a>
     </div>
 
     <div class="card">
       <h2>🗣️ Texto a Voz</h2>
       <p>Convierte texto escrito en audio hablado y descárgalo.</p>
-      <a href="TTS/index.html">Abrir</a>
+      <a href="texto-audio.html">Abrir</a>
     </div>
 
     <div class="card">
       <h2>🎤 Grabadora de Voz</h2>
       <p>Graba audio desde tu micrófono y guárdalo en <code>.webm</code> o <code>.wav</code>.</p>
-      <a href="TabAudioCapture/index.html">Abrir</a>
+      <a href="grabadora.html">Abrir</a>
     </div>
   </div>
+
+  <footer>
+    Hecho con ❤️ por [<a href="https://giohub.github.io/">GioHub</a>]
+  </footer>
 </body>
 </html>
