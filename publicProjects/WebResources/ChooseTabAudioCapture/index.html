@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Grabadora Avanzada 🎤🎧</title>
+  <title>TTS Pro con Grabadora 🎙️</title>
   <style>
     body {
       font-family: sans-serif;
@@ -14,111 +14,196 @@
       margin: 0;
     }
     .container {
-      max-width: 520px;
+      max-width: 650px;
       background: #fff;
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       text-align: center;
     }
-    select, button {
+    textarea {
+      width: 100%;
+      height: 120px;
+      margin-bottom: 15px;
+      padding: 10px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      resize: none;
+    }
+    select, input[type=range] {
+      width: 100%;
+      margin: 8px 0;
+    }
+    button {
       margin: 8px;
       padding: 10px 16px;
       border-radius: 8px;
-      border: 1px solid #d1d5db;
-      font-size: 15px;
-    }
-    button {
-      cursor: pointer;
       border: none;
+      font-size: 15px;
+      cursor: pointer;
       color: white;
     }
+    #playBtn { background: #2563eb; }
     #startBtn { background: #16a34a; }
     #stopBtn { background: #dc2626; }
-    #downloadWebm, #downloadWav {
-      display: none;
-      margin: 10px;
-      color: #2563eb;
-      text-decoration: none;
-    }
-    #warning {
-      color: #dc2626;
-      font-size: 14px;
-      display: none;
-      margin-top: 10px;
+    #stopBtn:disabled, #startBtn:disabled, #playBtn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
     audio {
       margin-top: 15px;
       width: 100%;
       outline: none;
+      display: none;
+    }
+    a {
+      display: none;
+      margin: 10px;
+      color: #2563eb;
+      text-decoration: none;
+    }
+    label {
+      display: block;
+      text-align: left;
+      margin-top: 10px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Grabadora Avanzada 🎤🎧</h2>
-    <p>Elige la fuente y graba audio.</p>
+    <h2>Texto a Voz Pro 🎙️</h2>
+    <textarea id="textInput" placeholder="Escribe tu texto aquí...
+Ejemplo: Hola [pause=2] mundo"></textarea>
+    
+    <label for="voiceSelect">Voz:</label>
+    <select id="voiceSelect"></select>
 
-    <label for="source">Fuente de audio:</label>
-    <select id="source">
-      <option value="mic">Micrófono 🎤</option>
-      <option value="tab">Pestaña actual 🎧</option>
-    </select>
-    <br>
+    <label for="rateRange">Velocidad: <span id="rateValue">1</span>x</label>
+    <input id="rateRange" type="range" min="0.5" max="2" step="0.1" value="1">
 
-    <button id="startBtn">▶ Iniciar Grabación</button>
+    <label for="pitchRange">Tono: <span id="pitchValue">1</span></label>
+    <input id="pitchRange" type="range" min="0.5" max="2" step="0.1" value="1">
+
+    <button id="playBtn">▶ Reproducir Texto</button>
+    <button id="startBtn">🔴 Grabar Voz</button>
     <button id="stopBtn" disabled>⏹ Detener</button>
     <br>
-
-    <p id="warning">⚠ No se detectó audio en la fuente seleccionada.</p>
-
-    <audio id="audioPlayer" controls style="display:none;"></audio>
+    <audio id="ttsAudio" controls></audio>
     <br>
-    <a id="downloadWebm" download="grabacion.webm">⬇ Descargar .webm</a>
-    <a id="downloadWav" download="grabacion.wav">⬇ Descargar .wav</a>
+    <audio id="audioPlayer" controls></audio>
+    <br>
+    <a id="downloadWebm" download="tts_grabacion.webm">⬇ Descargar .webm</a>
+    <a id="downloadWav" download="tts_grabacion.wav">⬇ Descargar .wav</a>
   </div>
 
   <script>
+    const textInput = document.getElementById("textInput");
+    const playBtn = document.getElementById("playBtn");
     const startBtn = document.getElementById("startBtn");
     const stopBtn = document.getElementById("stopBtn");
+    const ttsAudio = document.getElementById("ttsAudio");
     const audioPlayer = document.getElementById("audioPlayer");
     const downloadWebm = document.getElementById("downloadWebm");
     const downloadWav = document.getElementById("downloadWav");
-    const sourceSelect = document.getElementById("source");
-    const warning = document.getElementById("warning");
+    const voiceSelect = document.getElementById("voiceSelect");
+    const rateRange = document.getElementById("rateRange");
+    const pitchRange = document.getElementById("pitchRange");
+    const rateValue = document.getElementById("rateValue");
+    const pitchValue = document.getElementById("pitchValue");
 
-    let mediaRecorder;
-    let audioChunks = [];
+    // Contexto de audio y destino de grabación
+    const audioCtx = new AudioContext();
+    const dest = audioCtx.createMediaStreamDestination();
+    let mediaRecorder, audioChunks = [];
 
-    startBtn.addEventListener("click", async () => {
-      let stream;
-      if (sourceSelect.value === "mic") {
-        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      } else {
-        stream = await navigator.mediaDevices.getDisplayMedia({
-          video: true,  // necesario para que aparezca el diálogo
-          audio: true
-        });
+    // Enganchar <audio> al contexto
+    const sourceNode = audioCtx.createMediaElementSource(ttsAudio);
+    sourceNode.connect(audioCtx.destination);
+    sourceNode.connect(dest);
+
+    // ---- Manejo de voces ----
+    let voices = [];
+    function populateVoices() {
+      voices = speechSynthesis.getVoices();
+      voiceSelect.innerHTML = "";
+      voices.forEach((voice, i) => {
+        const option = document.createElement("option");
+        option.value = i;
+        option.textContent = `${voice.name} (${voice.lang})`;
+        voiceSelect.appendChild(option);
+      });
+    }
+    populateVoices();
+    speechSynthesis.onvoiceschanged = populateVoices;
+
+    // ---- Reproducir Texto con pausas ----
+    function speakWithPauses(text, rate, pitch, voice) {
+      // Dividir por [pause=n]
+      const parts = text.split(/\[pause=(\d+(\.\d+)?)\]/);
+
+      let index = 0;
+      function processNext() {
+        if (index >= parts.length) return;
+
+        const chunk = parts[index];
+
+        if (index % 3 === 0) {
+          // Texto normal
+          if (chunk.trim()) {
+            const utterance = new SpeechSynthesisUtterance(chunk);
+            utterance.rate = rate;
+            utterance.pitch = pitch;
+            if (voice) utterance.voice = voice;
+
+            utterance.onend = () => {
+              index++;
+              processNext();
+            };
+            speechSynthesis.speak(utterance);
+          } else {
+            index++;
+            processNext();
+          }
+        } else {
+          // Pausa detectada
+          const pauseSeconds = parseFloat(chunk);
+          setTimeout(() => {
+            index++;
+            processNext();
+          }, pauseSeconds * 1000);
+        }
       }
+      processNext();
+    }
 
-      // Filtrar solo audio
-      const audioTracks = stream.getAudioTracks();
-      if (audioTracks.length === 0) {
-        warning.style.display = "block";
-        return;
-      } else {
-        warning.style.display = "none";
-      }
-      const audioStream = new MediaStream(audioTracks);
+    playBtn.addEventListener("click", () => {
+      const text = textInput.value.trim();
+      if (!text) return alert("Escribe algún texto primero.");
 
-      // Configurar grabadora
-      mediaRecorder = new MediaRecorder(audioStream, {
+      const rate = parseFloat(rateRange.value);
+      const pitch = parseFloat(pitchRange.value);
+      const selectedVoice = voices[voiceSelect.value];
+
+      playBtn.disabled = true;
+      speechSynthesis.cancel();
+
+      speakWithPauses(text, rate, pitch, selectedVoice);
+
+      // Rehabilitar botón al terminar todo (estimado)
+      const estimatedDuration = text.split(" ").length / rate * 400;
+      setTimeout(() => playBtn.disabled = false, estimatedDuration);
+    });
+
+    // ---- Grabación ----
+    startBtn.addEventListener("click", () => {
+      mediaRecorder = new MediaRecorder(dest.stream, {
         mimeType: "audio/webm;codecs=opus"
       });
       audioChunks = [];
 
       mediaRecorder.ondataavailable = e => {
-        console.log("Chunk:", e.data.size, e.data.type);
         if (e.data.size > 0) audioChunks.push(e.data);
       };
 
@@ -126,18 +211,15 @@
         const blobWebm = new Blob(audioChunks, { type: "audio/webm" });
         const urlWebm = URL.createObjectURL(blobWebm);
 
-        // Mostrar reproductor
         audioPlayer.src = urlWebm;
         audioPlayer.style.display = "block";
 
-        // Link .webm
         downloadWebm.href = urlWebm;
         downloadWebm.style.display = "inline-block";
 
         // Convertir a WAV
         try {
           const arrayBuffer = await blobWebm.arrayBuffer();
-          const audioCtx = new AudioContext();
           const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
           const wavBlob = audioBufferToWav(audioBuffer);
           const urlWav = URL.createObjectURL(wavBlob);
@@ -160,7 +242,11 @@
       stopBtn.disabled = true;
     });
 
-    // Conversión a WAV
+    // ---- Actualizar valores UI ----
+    rateRange.addEventListener("input", () => rateValue.textContent = rateRange.value);
+    pitchRange.addEventListener("input", () => pitchValue.textContent = pitchRange.value);
+
+    // ---- Conversión a WAV ----
     function audioBufferToWav(buffer) {
       const numOfChan = buffer.numberOfChannels,
             length = buffer.length * numOfChan * 2 + 44,

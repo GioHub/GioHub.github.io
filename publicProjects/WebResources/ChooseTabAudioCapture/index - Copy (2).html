@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Grabadora Avanzada 🎤🎧</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9fafb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .container {
+      max-width: 520px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    select, button {
+      margin: 8px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 15px;
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      color: white;
+    }
+    #startBtn { background: #16a34a; }
+    #stopBtn { background: #dc2626; }
+    #downloadWebm, #downloadWav {
+      display: none;
+      margin: 10px;
+      color: #2563eb;
+      text-decoration: none;
+    }
+    #warning {
+      color: #dc2626;
+      font-size: 14px;
+      display: none;
+      margin-top: 10px;
+    }
+    audio {
+      margin-top: 15px;
+      width: 100%;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Grabadora Avanzada 🎤🎧</h2>
+    <p>Elige la fuente y graba audio.</p>
+
+    <label for="source">Fuente de audio:</label>
+    <select id="source">
+      <option value="mic">Micrófono 🎤</option>
+      <option value="tab">Pestaña actual 🎧</option>
+    </select>
+    <br>
+
+    <button id="startBtn">▶ Iniciar Grabación</button>
+    <button id="stopBtn" disabled>⏹ Detener</button>
+    <br>
+
+    <p id="warning">⚠ No se detectó audio en la fuente seleccionada.</p>
+
+    <audio id="audioPlayer" controls style="display:none;"></audio>
+    <br>
+    <a id="downloadWebm" download="grabacion.webm">⬇ Descargar .webm</a>
+    <a id="downloadWav" download="grabacion.wav">⬇ Descargar .wav</a>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById("startBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const audioPlayer = document.getElementById("audioPlayer");
+    const downloadWebm = document.getElementById("downloadWebm");
+    const downloadWav = document.getElementById("downloadWav");
+    const sourceSelect = document.getElementById("source");
+    const warning = document.getElementById("warning");
+
+    let mediaRecorder;
+    let audioChunks = [];
+
+    startBtn.addEventListener("click", async () => {
+      let stream;
+      if (sourceSelect.value === "mic") {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      } else {
+        stream = await navigator.mediaDevices.getDisplayMedia({
+          video: true,  // necesario para que aparezca el diálogo
+          audio: true
+        });
+      }
+
+      // Filtrar solo audio
+      const audioTracks = stream.getAudioTracks();
+      if (audioTracks.length === 0) {
+        warning.style.display = "block";
+        return;
+      } else {
+        warning.style.display = "none";
+      }
+      const audioStream = new MediaStream(audioTracks);
+
+      // Configurar grabadora
+      mediaRecorder = new MediaRecorder(audioStream, {
+        mimeType: "audio/webm;codecs=opus"
+      });
+      audioChunks = [];
+
+      mediaRecorder.ondataavailable = e => {
+        console.log("Chunk:", e.data.size, e.data.type);
+        if (e.data.size > 0) audioChunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = async () => {
+        const blobWebm = new Blob(audioChunks, { type: "audio/webm" });
+        const urlWebm = URL.createObjectURL(blobWebm);
+
+        // Mostrar reproductor
+        audioPlayer.src = urlWebm;
+        audioPlayer.style.display = "block";
+
+        // Link .webm
+        downloadWebm.href = urlWebm;
+        downloadWebm.style.display = "inline-block";
+
+        // Convertir a WAV
+        try {
+          const arrayBuffer = await blobWebm.arrayBuffer();
+          const audioCtx = new AudioContext();
+          const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+          const wavBlob = audioBufferToWav(audioBuffer);
+          const urlWav = URL.createObjectURL(wavBlob);
+
+          downloadWav.href = urlWav;
+          downloadWav.style.display = "inline-block";
+        } catch (err) {
+          console.error("Error al convertir a WAV:", err);
+        }
+      };
+
+      mediaRecorder.start();
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+    });
+
+    stopBtn.addEventListener("click", () => {
+      mediaRecorder.stop();
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+    });
+
+    // Conversión a WAV
+    function audioBufferToWav(buffer) {
+      const numOfChan = buffer.numberOfChannels,
+            length = buffer.length * numOfChan * 2 + 44,
+            bufferOut = new ArrayBuffer(length),
+            view = new DataView(bufferOut),
+            channels = [],
+            sampleRate = buffer.sampleRate;
+      let offset = 0;
+      let pos = 0;
+
+      setUint32(0x46464952); // "RIFF"
+      setUint32(length - 8);
+      setUint32(0x45564157); // "WAVE"
+
+      setUint32(0x20746d66); // "fmt "
+      setUint32(16);
+      setUint16(1);
+      setUint16(numOfChan);
+      setUint32(sampleRate);
+      setUint32(sampleRate * 2 * numOfChan);
+      setUint16(numOfChan * 2);
+      setUint16(16);
+
+      setUint32(0x61746164); // "data"
+      setUint32(length - pos - 4);
+
+      for (let i = 0; i < buffer.numberOfChannels; i++)
+        channels.push(buffer.getChannelData(i));
+
+      while (pos < length) {
+        for (let i = 0; i < numOfChan; i++) {
+          const sample = Math.max(-1, Math.min(1, channels[i][offset]));
+          const int16 = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+          view.setInt16(pos, int16, true);
+          pos += 2;
+        }
+        offset++;
+      }
+
+      return new Blob([bufferOut], { type: "audio/wav" });
+
+      function setUint16(data) { view.setUint16(pos, data, true); pos += 2; }
+      function setUint32(data) { view.setUint32(pos, data, true); pos += 4; }
+    }
+  </script>
+</body>
+</html>
