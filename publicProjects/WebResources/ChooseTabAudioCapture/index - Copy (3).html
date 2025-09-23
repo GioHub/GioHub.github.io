@@ -95,6 +95,7 @@ Ejemplo: Hola [pause=2] mundo"></textarea>
     <audio id="audioPlayer" controls></audio>
     <br>
     <a id="downloadWebm" download="tts_grabacion.webm">⬇ Descargar .webm</a>
+    <a id="downloadWav" download="tts_grabacion.wav">⬇ Descargar .wav</a>
   </div>
 
   <script>
@@ -105,6 +106,7 @@ Ejemplo: Hola [pause=2] mundo"></textarea>
     const ttsAudio = document.getElementById("ttsAudio");
     const audioPlayer = document.getElementById("audioPlayer");
     const downloadWebm = document.getElementById("downloadWebm");
+    const downloadWav = document.getElementById("downloadWav");
     const voiceSelect = document.getElementById("voiceSelect");
     const rateRange = document.getElementById("rateRange");
     const pitchRange = document.getElementById("pitchRange");
@@ -138,17 +140,23 @@ Ejemplo: Hola [pause=2] mundo"></textarea>
 
     // ---- Reproducir Texto con pausas ----
     function speakWithPauses(text, rate, pitch, voice) {
+      // Dividir por [pause=n]
       const parts = text.split(/\[pause=(\d+(\.\d+)?)\]/);
+
       let index = 0;
       function processNext() {
         if (index >= parts.length) return;
+
         const chunk = parts[index];
+
         if (index % 3 === 0) {
+          // Texto normal
           if (chunk.trim()) {
             const utterance = new SpeechSynthesisUtterance(chunk);
             utterance.rate = rate;
             utterance.pitch = pitch;
             if (voice) utterance.voice = voice;
+
             utterance.onend = () => {
               index++;
               processNext();
@@ -159,6 +167,7 @@ Ejemplo: Hola [pause=2] mundo"></textarea>
             processNext();
           }
         } else {
+          // Pausa detectada
           const pauseSeconds = parseFloat(chunk);
           setTimeout(() => {
             index++;
@@ -172,12 +181,17 @@ Ejemplo: Hola [pause=2] mundo"></textarea>
     playBtn.addEventListener("click", () => {
       const text = textInput.value.trim();
       if (!text) return alert("Escribe algún texto primero.");
+
       const rate = parseFloat(rateRange.value);
       const pitch = parseFloat(pitchRange.value);
       const selectedVoice = voices[voiceSelect.value];
+
       playBtn.disabled = true;
       speechSynthesis.cancel();
+
       speakWithPauses(text, rate, pitch, selectedVoice);
+
+      // Rehabilitar botón al terminar todo (estimado)
       const estimatedDuration = text.split(" ").length / rate * 400;
       setTimeout(() => playBtn.disabled = false, estimatedDuration);
     });
@@ -188,17 +202,35 @@ Ejemplo: Hola [pause=2] mundo"></textarea>
         mimeType: "audio/webm;codecs=opus"
       });
       audioChunks = [];
+
       mediaRecorder.ondataavailable = e => {
         if (e.data.size > 0) audioChunks.push(e.data);
       };
-      mediaRecorder.onstop = () => {
+
+      mediaRecorder.onstop = async () => {
         const blobWebm = new Blob(audioChunks, { type: "audio/webm" });
         const urlWebm = URL.createObjectURL(blobWebm);
+
         audioPlayer.src = urlWebm;
         audioPlayer.style.display = "block";
+
         downloadWebm.href = urlWebm;
         downloadWebm.style.display = "inline-block";
+
+        // Convertir a WAV
+        try {
+          const arrayBuffer = await blobWebm.arrayBuffer();
+          const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+          const wavBlob = audioBufferToWav(audioBuffer);
+          const urlWav = URL.createObjectURL(wavBlob);
+
+          downloadWav.href = urlWav;
+          downloadWav.style.display = "inline-block";
+        } catch (err) {
+          console.error("Error al convertir a WAV:", err);
+        }
       };
+
       mediaRecorder.start();
       startBtn.disabled = true;
       stopBtn.disabled = false;
@@ -213,6 +245,52 @@ Ejemplo: Hola [pause=2] mundo"></textarea>
     // ---- Actualizar valores UI ----
     rateRange.addEventListener("input", () => rateValue.textContent = rateRange.value);
     pitchRange.addEventListener("input", () => pitchValue.textContent = pitchRange.value);
+
+    // ---- Conversión a WAV ----
+    function audioBufferToWav(buffer) {
+      const numOfChan = buffer.numberOfChannels,
+            length = buffer.length * numOfChan * 2 + 44,
+            bufferOut = new ArrayBuffer(length),
+            view = new DataView(bufferOut),
+            channels = [],
+            sampleRate = buffer.sampleRate;
+      let offset = 0;
+      let pos = 0;
+
+      setUint32(0x46464952); // "RIFF"
+      setUint32(length - 8);
+      setUint32(0x45564157); // "WAVE"
+
+      setUint32(0x20746d66); // "fmt "
+      setUint32(16);
+      setUint16(1);
+      setUint16(numOfChan);
+      setUint32(sampleRate);
+      setUint32(sampleRate * 2 * numOfChan);
+      setUint16(numOfChan * 2);
+      setUint16(16);
+
+      setUint32(0x61746164); // "data"
+      setUint32(length - pos - 4);
+
+      for (let i = 0; i < buffer.numberOfChannels; i++)
+        channels.push(buffer.getChannelData(i));
+
+      while (pos < length) {
+        for (let i = 0; i < numOfChan; i++) {
+          const sample = Math.max(-1, Math.min(1, channels[i][offset]));
+          const int16 = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+          view.setInt16(pos, int16, true);
+          pos += 2;
+        }
+        offset++;
+      }
+
+      return new Blob([bufferOut], { type: "audio/wav" });
+
+      function setUint16(data) { view.setUint16(pos, data, true); pos += 2; }
+      function setUint32(data) { view.setUint32(pos, data, true); pos += 4; }
+    }
   </script>
 </body>
 </html>
