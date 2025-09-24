@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Grabadora de Pestaña (Video + Audio)</title>
+  <title>Grabadora de Pestaña (Video + Audio)1</title>
   <style>
     body {
       font-family: sans-serif;
@@ -72,11 +72,13 @@
     let mediaRecorder, chunks = [];
 
     startBtn.addEventListener("click", async () => {
+console.log("Iniciando grabación...");
       try {
         const stream = await navigator.mediaDevices.getDisplayMedia({
           video: true,
           audio: true
         });
+console.log("Stream capturado:", stream);
 
         let options = {};
         if (MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus")) {
@@ -111,4 +113,16 @@
 
       } catch (err) {
         console.error("Error al iniciar grabación:", err);
-        alert("No se pudo iniciar la grabación. Asegúrate de permitir ac
+        alert("No se pudo iniciar la grabación. Asegúrate de permitir acceso y marcar 'Compartir audio'.");
+	alert("Error: " + err.message);
+      }
+    });
+
+    stopBtn.addEventListener("click", () => {
+      mediaRecorder.stop();
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+    });
+  </script>
+</body>
+</html>
