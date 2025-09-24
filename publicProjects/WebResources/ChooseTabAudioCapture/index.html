@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Grabadora de Pestaña con Audio</title>
+  <title>Grabadora de Pestaña (Video + Audio)</title>
   <style>
     body {
       font-family: sans-serif;
@@ -36,7 +36,7 @@
       opacity: 0.6;
       cursor: not-allowed;
     }
-    audio {
+    video {
       margin-top: 15px;
       width: 100%;
       outline: none;
@@ -53,12 +53,12 @@
 </head>
 <body>
   <div class="container">
-    <h2>🎥 Grabadora de Pestaña</h2>
-    <p>Comparte una pestaña con audio (ej. tu TTS)</p>
+    <h2>🎥 Grabadora de Pestaña (Video + Audio)</h2>
+    <p>Selecciona una pestaña con audio (ej: YouTube, TTS) y compártela</p>
     <button id="startBtn">🔴 Iniciar Grabación</button>
     <button id="stopBtn" disabled>⏹ Detener</button>
     <br>
-    <audio id="audioPlayer" controls></audio>
+    <video id="videoPlayer" controls></video>
     <br>
     <a id="downloadLink" download="grabacion.webm">⬇ Descargar .webm</a>
   </div>
@@ -66,10 +66,10 @@
   <script>
     const startBtn = document.getElementById("startBtn");
     const stopBtn = document.getElementById("stopBtn");
-    const audioPlayer = document.getElementById("audioPlayer");
+    const videoPlayer = document.getElementById("videoPlayer");
     const downloadLink = document.getElementById("downloadLink");
 
-    let mediaRecorder, audioChunks = [];
+    let mediaRecorder, chunks = [];
 
     startBtn.addEventListener("click", async () => {
       try {
@@ -78,29 +78,28 @@
           audio: true
         });
 
-        //mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm;codecs=opus" });
-	let options = {};
-	if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) {
-  		options.mimeType = "audio/webm;codecs=opus";
-	} else if (MediaRecorder.isTypeSupported("audio/webm")) {
-  		options.mimeType = "audio/webm";
-	} else if (MediaRecorder.isTypeSupported("audio/mp4")) {
-  		options.mimeType = "audio/mp4";
-	}
-	mediaRecorder = new MediaRecorder(stream, options);
+        let options = {};
+        if (MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus")) {
+          options.mimeType = "video/webm;codecs=vp9,opus";
+        } else if (MediaRecorder.isTypeSupported("video/webm;codecs=vp8,opus")) {
+          options.mimeType = "video/webm;codecs=vp8,opus";
+        } else {
+          options.mimeType = "video/webm";
+        }
 
-        audioChunks = [];
+        mediaRecorder = new MediaRecorder(stream, options);
+        chunks = [];
 
         mediaRecorder.ondataavailable = e => {
-          if (e.data.size > 0) audioChunks.push(e.data);
+          if (e.data.size > 0) chunks.push(e.data);
         };
 
         mediaRecorder.onstop = () => {
-          const blob = new Blob(audioChunks, { type: "audio/webm" });
+          const blob = new Blob(chunks, { type: options.mimeType });
           const url = URL.createObjectURL(blob);
 
-          audioPlayer.src = url;
-          audioPlayer.style.display = "block";
+          videoPlayer.src = url;
+          videoPlayer.style.display = "block";
 
           downloadLink.href = url;
           downloadLink.style.display = "inline-block";
@@ -112,15 +111,4 @@
 
       } catch (err) {
         console.error("Error al iniciar grabación:", err);
-        alert("No se pudo iniciar la grabación. Asegúrate de permitir acceso y marcar 'Compartir audio'.");
-      }
-    });
-
-    stopBtn.addEventListener("click", () => {
-      mediaRecorder.stop();
-      startBtn.disabled = false;
-      stopBtn.disabled = true;
-    });
-  </script>
-</body>
-</html>
+        alert("No se pudo iniciar la grabación. Asegúrate de permitir ac
