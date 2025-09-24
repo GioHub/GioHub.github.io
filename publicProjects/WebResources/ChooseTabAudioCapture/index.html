@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>TTS Pro con Grabadora 🎙️</title>
+  <title>Grabadora de Pestaña con Audio</title>
   <style>
     body {
       font-family: sans-serif;
@@ -14,26 +14,12 @@
       margin: 0;
     }
     .container {
-      max-width: 650px;
+      max-width: 500px;
       background: #fff;
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       text-align: center;
-    }
-    textarea {
-      width: 100%;
-      height: 120px;
-      margin-bottom: 15px;
-      padding: 10px;
-      font-size: 15px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      resize: none;
-    }
-    select, input[type=range] {
-      width: 100%;
-      margin: 8px 0;
     }
     button {
       margin: 8px;
@@ -44,10 +30,9 @@
       cursor: pointer;
       color: white;
     }
-    #playBtn { background: #2563eb; }
     #startBtn { background: #16a34a; }
     #stopBtn { background: #dc2626; }
-    #stopBtn:disabled, #startBtn:disabled, #playBtn:disabled {
+    #stopBtn:disabled, #startBtn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
     }
@@ -59,149 +44,66 @@
     }
     a {
       display: none;
-      margin: 10px;
+      margin-top: 10px;
       color: #2563eb;
       text-decoration: none;
-    }
-    label {
-      display: block;
-      text-align: left;
-      margin-top: 10px;
       font-weight: bold;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Texto a Voz Pro 🎙️</h2>
-    <textarea id="textInput" placeholder="Escribe tu texto aquí...
-Ejemplo: Hola [pause=2] mundo"></textarea>
-    
-    <label for="voiceSelect">Voz:</label>
-    <select id="voiceSelect"></select>
-
-    <label for="rateRange">Velocidad: <span id="rateValue">1</span>x</label>
-    <input id="rateRange" type="range" min="0.5" max="2" step="0.1" value="1">
-
-    <label for="pitchRange">Tono: <span id="pitchValue">1</span></label>
-    <input id="pitchRange" type="range" min="0.5" max="2" step="0.1" value="1">
-
-    <button id="playBtn">▶ Reproducir Texto</button>
-    <button id="startBtn">🔴 Grabar Voz</button>
+    <h2>🎥 Grabadora de Pestaña</h2>
+    <p>Comparte una pestaña con audio (ej. tu TTS)</p>
+    <button id="startBtn">🔴 Iniciar Grabación</button>
     <button id="stopBtn" disabled>⏹ Detener</button>
-    <br>
-    <audio id="ttsAudio" controls></audio>
     <br>
     <audio id="audioPlayer" controls></audio>
     <br>
-    <a id="downloadWebm" download="tts_grabacion.webm">⬇ Descargar .webm</a>
+    <a id="downloadLink" download="grabacion.webm">⬇ Descargar .webm</a>
   </div>
 
   <script>
-    const textInput = document.getElementById("textInput");
-    const playBtn = document.getElementById("playBtn");
     const startBtn = document.getElementById("startBtn");
     const stopBtn = document.getElementById("stopBtn");
-    const ttsAudio = document.getElementById("ttsAudio");
     const audioPlayer = document.getElementById("audioPlayer");
-    const downloadWebm = document.getElementById("downloadWebm");
-    const voiceSelect = document.getElementById("voiceSelect");
-    const rateRange = document.getElementById("rateRange");
-    const pitchRange = document.getElementById("pitchRange");
-    const rateValue = document.getElementById("rateValue");
-    const pitchValue = document.getElementById("pitchValue");
+    const downloadLink = document.getElementById("downloadLink");
 
-    // Contexto de audio y destino de grabación
-    const audioCtx = new AudioContext();
-    const dest = audioCtx.createMediaStreamDestination();
     let mediaRecorder, audioChunks = [];
 
-    // Enganchar <audio> al contexto
-    const sourceNode = audioCtx.createMediaElementSource(ttsAudio);
-    sourceNode.connect(audioCtx.destination);
-    sourceNode.connect(dest);
+    startBtn.addEventListener("click", async () => {
+      try {
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+          video: true,
+          audio: true
+        });
 
-    // ---- Manejo de voces ----
-    let voices = [];
-    function populateVoices() {
-      voices = speechSynthesis.getVoices();
-      voiceSelect.innerHTML = "";
-      voices.forEach((voice, i) => {
-        const option = document.createElement("option");
-        option.value = i;
-        option.textContent = `${voice.name} (${voice.lang})`;
-        voiceSelect.appendChild(option);
-      });
-    }
-    populateVoices();
-    speechSynthesis.onvoiceschanged = populateVoices;
+        mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm;codecs=opus" });
+        audioChunks = [];
 
-    // ---- Reproducir Texto con pausas ----
-    function speakWithPauses(text, rate, pitch, voice) {
-      const parts = text.split(/\[pause=(\d+(\.\d+)?)\]/);
-      let index = 0;
-      function processNext() {
-        if (index >= parts.length) return;
-        const chunk = parts[index];
-        if (index % 3 === 0) {
-          if (chunk.trim()) {
-            const utterance = new SpeechSynthesisUtterance(chunk);
-            utterance.rate = rate;
-            utterance.pitch = pitch;
-            if (voice) utterance.voice = voice;
-            utterance.onend = () => {
-              index++;
-              processNext();
-            };
-            speechSynthesis.speak(utterance);
-          } else {
-            index++;
-            processNext();
-          }
-        } else {
-          const pauseSeconds = parseFloat(chunk);
-          setTimeout(() => {
-            index++;
-            processNext();
-          }, pauseSeconds * 1000);
-        }
+        mediaRecorder.ondataavailable = e => {
+          if (e.data.size > 0) audioChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(audioChunks, { type: "audio/webm" });
+          const url = URL.createObjectURL(blob);
+
+          audioPlayer.src = url;
+          audioPlayer.style.display = "block";
+
+          downloadLink.href = url;
+          downloadLink.style.display = "inline-block";
+        };
+
+        mediaRecorder.start();
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+
+      } catch (err) {
+        console.error("Error al iniciar grabación:", err);
+        alert("No se pudo iniciar la grabación. Asegúrate de permitir acceso y marcar 'Compartir audio'.");
       }
-      processNext();
-    }
-
-    playBtn.addEventListener("click", () => {
-      const text = textInput.value.trim();
-      if (!text) return alert("Escribe algún texto primero.");
-      const rate = parseFloat(rateRange.value);
-      const pitch = parseFloat(pitchRange.value);
-      const selectedVoice = voices[voiceSelect.value];
-      playBtn.disabled = true;
-      speechSynthesis.cancel();
-      speakWithPauses(text, rate, pitch, selectedVoice);
-      const estimatedDuration = text.split(" ").length / rate * 400;
-      setTimeout(() => playBtn.disabled = false, estimatedDuration);
-    });
-
-    // ---- Grabación ----
-    startBtn.addEventListener("click", () => {
-      mediaRecorder = new MediaRecorder(dest.stream, {
-        mimeType: "audio/webm;codecs=opus"
-      });
-      audioChunks = [];
-      mediaRecorder.ondataavailable = e => {
-        if (e.data.size > 0) audioChunks.push(e.data);
-      };
-      mediaRecorder.onstop = () => {
-        const blobWebm = new Blob(audioChunks, { type: "audio/webm" });
-        const urlWebm = URL.createObjectURL(blobWebm);
-        audioPlayer.src = urlWebm;
-        audioPlayer.style.display = "block";
-        downloadWebm.href = urlWebm;
-        downloadWebm.style.display = "inline-block";
-      };
-      mediaRecorder.start();
-      startBtn.disabled = true;
-      stopBtn.disabled = false;
     });
 
     stopBtn.addEventListener("click", () => {
@@ -209,10 +111,6 @@ Ejemplo: Hola [pause=2] mundo"></textarea>
       startBtn.disabled = false;
       stopBtn.disabled = true;
     });
-
-    // ---- Actualizar valores UI ----
-    rateRange.addEventListener("input", () => rateValue.textContent = rateRange.value);
-    pitchRange.addEventListener("input", () => pitchValue.textContent = pitchRange.value);
   </script>
 </body>
 </html>
