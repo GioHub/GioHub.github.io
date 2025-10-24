@@ -2,126 +2,142 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Grabadora de Pestaña (Video + Audio)1</title>
+  <title>Mini Toolbox</title>
+  <!-- Carga directa de la librería desde jsDelivr -->
+  <!--<script src="https://cdn.jsdelivr.net/gh/kripken/mespeak.js/mespeak.js"></script>-->
+<script src="https://rawcdn.githack.com/kripken/mespeak.js/master/mespeak.js"></script>
   <style>
     body {
-      font-family: sans-serif;
-      background: #f9fafb;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
       margin: 0;
-    }
-    .container {
-      max-width: 500px;
-      background: #fff;
       padding: 20px;
+    }
+    h1 { text-align: center; color: #111827; }
+    .toolbox { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+    .tool {
+      background: #fff;
+      padding: 15px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       text-align: center;
     }
-    button {
-      margin: 8px;
+    button, select {
+      margin: 8px 0;
       padding: 10px 16px;
       border-radius: 8px;
       border: none;
       font-size: 15px;
       cursor: pointer;
-      color: white;
     }
-    #startBtn { background: #16a34a; }
-    #stopBtn { background: #dc2626; }
-    #stopBtn:disabled, #startBtn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-    video {
-      margin-top: 15px;
+    button { color: white; }
+    #playBtn { background: #2563eb; }
+    #downloadBtn { background: #16a34a; }
+    textarea {
       width: 100%;
-      outline: none;
-      display: none;
+      height: 80px;
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      resize: none;
     }
-    a {
-      display: none;
-      margin-top: 10px;
-      color: #2563eb;
-      text-decoration: none;
-      font-weight: bold;
-    }
+    audio { width: 100%; margin-top: 10px; display: none; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>🎥 Grabadora de Pestaña (Video + Audio)</h2>
-    <p>Selecciona una pestaña con audio (ej: YouTube, TTS) y compártela</p>
-    <button id="startBtn">🔴 Iniciar Grabación</button>
-    <button id="stopBtn" disabled>⏹ Detener</button>
-    <br>
-    <video id="videoPlayer" controls></video>
-    <br>
-    <a id="downloadLink" download="grabacion.webm">⬇ Descargar .webm</a>
+  <h1>📦 Mini Toolbox5</h1>
+  <div class="toolbox">
+
+    <!-- TTS Tool -->
+    <div class="tool">
+      <h2>🗣️ Texto a Voz</h2>
+      <textarea id="textInput" placeholder="Escribe tu texto aquí..."></textarea><br>
+      <label for="voiceSelect">Selecciona voz/idioma:</label>
+      <select id="voiceSelect"></select><br>
+      <button id="playBtn">▶ Escuchar</button>
+      <button id="downloadBtn">⬇ Descargar WAV</button>
+      <audio id="audioPlayer" controls></audio>
+    </div>
+
+    <!-- Placeholder para otras herramientas -->
+    <div class="tool">
+      <h2>🎥 Captura de Video</h2>
+      <p>Accede a tu herramienta de capturas aquí...</p>
+    </div>
+    
   </div>
 
   <script>
-    const startBtn = document.getElementById("startBtn");
-    const stopBtn = document.getElementById("stopBtn");
-    const videoPlayer = document.getElementById("videoPlayer");
-    const downloadLink = document.getElementById("downloadLink");
+    document.addEventListener("DOMContentLoaded", () => {
 
-    let mediaRecorder, chunks = [];
+      // --- Inicializar meSpeak ---
+      meSpeak.loadConfig("https://cdn.jsdelivr.net/gh/kripken/mespeak.js/mespeak_config.json");
 
-    startBtn.addEventListener("click", async () => {
-console.log("Iniciando grabación...");
-      try {
-        const stream = await navigator.mediaDevices.getDisplayMedia({
-          video: true,
-          audio: true
-        });
-console.log("Stream capturado:", stream);
+      const textInput = document.getElementById("textInput");
+      const playBtn = document.getElementById("playBtn");
+      const downloadBtn = document.getElementById("downloadBtn");
+      const audioPlayer = document.getElementById("audioPlayer");
+      const voiceSelect = document.getElementById("voiceSelect");
 
-        let options = {};
-        if (MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus")) {
-          options.mimeType = "video/webm;codecs=vp9,opus";
-        } else if (MediaRecorder.isTypeSupported("video/webm;codecs=vp8,opus")) {
-          options.mimeType = "video/webm;codecs=vp8,opus";
-        } else {
-          options.mimeType = "video/webm";
-        }
+      let lastWav = null;
 
-        mediaRecorder = new MediaRecorder(stream, options);
-        chunks = [];
+      const voices = [
+        { name: "Español", url: "https://cdn.jsdelivr.net/gh/kripken/mespeak.js/voices/es.json" },
+        { name: "Inglés", url: "https://cdn.jsdelivr.net/gh/kripken/mespeak.js/voices/en.json" },
+        { name: "Francés", url: "https://cdn.jsdelivr.net/gh/kripken/mespeak.js/voices/fr.json" },
+        { name: "Alemán", url: "https://cdn.jsdelivr.net/gh/kripken/mespeak.js/voices/de.json" },
+        { name: "Italiano", url: "https://cdn.jsdelivr.net/gh/kripken/mespeak.js/voices/it.json" }
+      ];
 
-        mediaRecorder.ondataavailable = e => {
-          if (e.data.size > 0) chunks.push(e.data);
-        };
+      // Llenar selector de voces
+      voices.forEach((v, i) => {
+        const opt = document.createElement("option");
+        opt.value = i;
+        opt.textContent = v.name;
+        voiceSelect.appendChild(opt);
+      });
 
-        mediaRecorder.onstop = () => {
-          const blob = new Blob(chunks, { type: options.mimeType });
-          const url = URL.createObjectURL(blob);
-
-          videoPlayer.src = url;
-          videoPlayer.style.display = "block";
-
-          downloadLink.href = url;
-          downloadLink.style.display = "inline-block";
-        };
-
-        mediaRecorder.start();
-        startBtn.disabled = true;
-        stopBtn.disabled = false;
-
-      } catch (err) {
-        console.error("Error al iniciar grabación:", err);
-        alert("No se pudo iniciar la grabación. Asegúrate de permitir acceso y marcar 'Compartir audio'.");
-	alert("Error: " + err.message);
+      // Cargar voz seleccionada
+      async function loadVoice(index) {
+        const voiceUrl = voices[index].url;
+        await fetch(voiceUrl)
+          .then(r => r.json())
+          .then(data => meSpeak.loadVoice(data));
       }
-    });
 
-    stopBtn.addEventListener("click", () => {
-      mediaRecorder.stop();
-      startBtn.disabled = false;
-      stopBtn.disabled = true;
+      // Cargar voz inicial
+      loadVoice(0);
+
+      voiceSelect.addEventListener("change", e => {
+        loadVoice(e.target.value);
+      });
+
+      // Escuchar TTS
+      playBtn.addEventListener("click", () => {
+        const text = textInput.value.trim();
+        if (!text) return alert("Escribe algo de texto primero.");
+        meSpeak.speak(text);
+      });
+
+      // Descargar WAV
+      downloadBtn.addEventListener("click", () => {
+        const text = textInput.value.trim();
+        if (!text) return alert("Escribe algo de texto primero.");
+
+        const wavData = meSpeak.speak(text, { rawdata: "arraybuffer" });
+        lastWav = new Blob([wavData], { type: "audio/wav" });
+
+        const url = URL.createObjectURL(lastWav);
+        audioPlayer.src = url;
+        audioPlayer.style.display = "block";
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `tts_${voices[voiceSelect.value].name}.wav`;
+        a.click();
+      });
+
     });
   </script>
 </body>
