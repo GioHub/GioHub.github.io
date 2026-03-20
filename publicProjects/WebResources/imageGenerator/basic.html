@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Image Generator PRO</title>
+
+  <script src="https://js.puter.com/v2/"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: rgba(0,0,0,0.65);
+      padding: 20px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 520px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    h1 { text-align: center; }
+
+    textarea, select, button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+    }
+
+    button {
+      background: #00c6ff;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover { background: #00a6d6; }
+
+    .progress {
+      margin-top: 15px;
+      width: 100%;
+      background: #444;
+      border-radius: 10px;
+      overflow: hidden;
+      height: 10px;
+      display: none;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #00ffcc;
+      transition: width 0.3s;
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 12px;
+      text-align: center;
+      opacity: 0.85;
+    }
+
+    #result img {
+      width: 100%;
+      margin-top: 20px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>AI Image Generator</h1>
+
+  <textarea id="prompt" rows="3" placeholder="Describe la imagen..."></textarea>
+
+  <select id="style">
+    <option value="">Sin estilo</option>
+    <option value="cartoon">Caricatura</option>
+    <option value="sci-fi">Sci-Fi</option>
+    <option value="realistic">Hiperrealista</option>
+    <option value="black and white">Blanco y Negro</option>
+  </select>
+
+  <button onclick="enhancePrompt()">Mejorar Prompt</button>
+  <button onclick="generateImage()">Generar Imagen</button>
+
+  <div class="progress" id="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="status" id="status"></div>
+
+  <div id="result"></div>
+</div>
+
+<script>
+
+function enhancePrompt() {
+  let prompt = document.getElementById("prompt").value;
+  if (!prompt) return;
+
+  let enhanced = `highly detailed, ${prompt}, cinematic lighting, 4k, ultra realistic, trending on artstation`;
+  document.getElementById("prompt").value = enhanced;
+}
+
+async function generateImage() {
+  const prompt = document.getElementById("prompt").value;
+  const style = document.getElementById("style").value;
+  const status = document.getElementById("status");
+
+  if (!prompt) return alert("Escribe un prompt");
+
+  const finalPrompt = prompt + (style ? `, ${style}` : "");
+
+  document.getElementById("progress").style.display = "block";
+  const bar = document.getElementById("progressBar");
+  bar.style.width = "0%";
+
+  const result = document.getElementById("result");
+  result.innerHTML = "";
+
+  let progress = 0;
+  const interval = setInterval(() => {
+    if (progress < 90) {
+      progress += 4;
+      bar.style.width = progress + "%";
+    }
+  }, 200);
+
+  status.innerText = "Generando imagen con IA real...";
+
+  try {
+    const img = await puter.ai.txt2img(finalPrompt, {
+      model: "stabilityai/stable-diffusion-3-medium",
+      width: 512,
+      height: 512
+    });
+
+    result.appendChild(img);
+
+    status.innerText = "Imagen generada correctamente";
+
+  } catch (err) {
+    console.error(err);
+    status.innerText = "Error generando imagen";
+  }
+
+  clearInterval(interval);
+  bar.style.width = "100%";
+}
+
+</script>
+
+</body>
+</html>

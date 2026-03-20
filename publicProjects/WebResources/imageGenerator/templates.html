@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Image Generator PRO</title>
+
+  <script src="https://js.puter.com/v2/"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: rgba(0,0,0,0.75);
+      padding: 20px;
+      border-radius: 16px;
+      width: 95%;
+      max-width: 650px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    h1 { text-align: center; }
+
+    textarea, select, button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+    }
+
+    button {
+      background: #00c6ff;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover { background: #00a6d6; }
+
+    .progress {
+      margin-top: 15px;
+      width: 100%;
+      background: #444;
+      border-radius: 10px;
+      overflow: hidden;
+      height: 10px;
+      display: none;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #00ffcc;
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    #result img {
+      width: 100%;
+      margin-top: 20px;
+      border-radius: 10px;
+    }
+
+    .history {
+      margin-top: 20px;
+      max-height: 200px;
+      overflow-y: auto;
+      border-top: 1px solid #555;
+      padding-top: 10px;
+    }
+
+    .history img {
+      width: 100%;
+      margin-top: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>AI Image Generator PRO</h1>
+
+  <textarea id="prompt" rows="3" placeholder="Describe la imagen..."></textarea>
+
+  <select id="template">
+    <option value="">Selecciona una plantilla</option>
+    <option value="youtube">🔥 Thumbnail YouTube</option>
+    <option value="instagram">📸 Post Instagram</option>
+    <option value="branding">🧠 Personal Branding</option>
+    <option value="logo">🧾 Logo Startup</option>
+    <option value="nft">🎨 Arte NFT</option>
+    <option value="ecommerce">🛍️ Producto eCommerce</option>
+  </select>
+
+  <button onclick="enhancePrompt()">Optimizar Prompt</button>
+  <button onclick="generateImage()">Generar Imagen</button>
+
+  <div class="progress" id="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="status" id="status"></div>
+
+  <div id="result"></div>
+
+  <div class="history" id="history"></div>
+</div>
+
+<script>
+
+const templates = {
+  youtube: "youtube thumbnail, high contrast, expressive face, bold text, vibrant colors, clickbait style, dramatic lighting",
+  instagram: "instagram post, aesthetic, clean composition, soft lighting, modern style, high quality",
+  branding: "personal branding image, professional, confident, modern background, linkedin style, clean",
+  logo: "professional logo design, minimalist, vector style, white background, branding, clean lines",
+  nft: "nft art, unique character, highly detailed, digital art, vibrant, collectible",
+  ecommerce: "product photography, clean background, commercial, studio lighting, high detail, advertising style"
+};
+
+function enhancePrompt() {
+  let prompt = document.getElementById("prompt").value;
+  if (!prompt) return;
+
+  let enhanced = `highly detailed, ${prompt}, cinematic lighting, 4k, trending on artstation`;
+  document.getElementById("prompt").value = enhanced;
+}
+
+async function generateImage() {
+  const prompt = document.getElementById("prompt").value;
+  const templateKey = document.getElementById("template").value;
+  const status = document.getElementById("status");
+
+  if (!prompt) return alert("Escribe un prompt");
+
+  const templatePrompt = templates[templateKey] || "";
+
+  const finalPrompt = `${templatePrompt}, ${prompt}, high quality, 4k, ultra detailed`;
+
+  document.getElementById("progress").style.display = "block";
+  const bar = document.getElementById("progressBar");
+  bar.style.width = "0%";
+
+  const result = document.getElementById("result");
+  result.innerHTML = "";
+
+  let progress = 0;
+  const interval = setInterval(() => {
+    if (progress < 90) {
+      progress += 3;
+      bar.style.width = progress + "%";
+    }
+  }, 200);
+
+  status.innerText = "Generando imagen optimizada...";
+
+  try {
+    const img = await puter.ai.txt2img(finalPrompt, {
+      model: "stabilityai/stable-diffusion-3-medium",
+      width: 512,
+      height: 512
+    });
+
+    result.appendChild(img);
+
+    const btn = document.createElement("button");
+    btn.innerText = "Descargar Imagen";
+    btn.onclick = () => {
+      const a = document.createElement("a");
+      a.href = img.src;
+      a.download = "ai-image.png";
+      a.click();
+    };
+
+    result.appendChild(btn);
+
+    saveToHistory(img.src);
+
+    status.innerText = "Imagen generada con plantilla";
+
+  } catch (err) {
+    console.error(err);
+    status.innerText = "Error generando imagen";
+  }
+
+  clearInterval(interval);
+  bar.style.width = "100%";
+}
+
+function saveToHistory(src) {
+  const history = document.getElementById("history");
+
+  const img = document.createElement("img");
+  img.src = src;
+
+  img.onclick = () => {
+    document.getElementById("result").innerHTML = "";
+    const full = document.createElement("img");
+    full.src = src;
+    document.getElementById("result").appendChild(full);
+  };
+
+  history.prepend(img);
+}
+
+</script>
+
+</body>
+</html>

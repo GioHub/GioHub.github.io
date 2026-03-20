@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Image Generator PRO</title>
+
+  <script src="https://js.puter.com/v2/"></script>
+
+  <style>
+    body { margin:0; font-family:Arial; background:linear-gradient(135deg,#1e3c72,#2a5298); color:white; display:flex; justify-content:center; align-items:center; min-height:100vh; }
+    .container { background:rgba(0,0,0,0.75); padding:20px; border-radius:16px; width:95%; max-width:650px; }
+    textarea, select, button, input { width:100%; margin-top:10px; padding:10px; border-radius:8px; border:none; }
+    button { background:#00c6ff; font-weight:bold; cursor:pointer; }
+    .progress { margin-top:10px; background:#444; height:10px; border-radius:10px; display:none; }
+    .progress-bar { height:100%; width:0%; background:#00ffcc; }
+    #result img { width:100%; margin-top:15px; border-radius:10px; }
+    .history img { width:100%; margin-top:10px; cursor:pointer; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>AI Generator PRO</h2>
+
+  <textarea id="prompt" placeholder="Describe la imagen..."></textarea>
+
+  <select id="template" onchange="showInputs()">
+    <option value="">Selecciona plantilla</option>
+    <option value="youtube">🔥 YouTube</option>
+    <option value="instagram">📸 Instagram</option>
+    <option value="logo">🧾 Logo</option>
+  </select>
+
+  <div id="extraInputs"></div>
+
+  <button onclick="makeViral()">🔥 Hazlo más viral</button>
+  <button onclick="generateImage()">Generar</button>
+
+  <div class="progress" id="progress"><div class="progress-bar" id="progressBar"></div></div>
+
+  <div id="result"></div>
+  <div class="history" id="history"></div>
+</div>
+
+<script>
+
+const templates = {
+  youtube: "youtube thumbnail, high contrast, expressive face, bold text, clickbait",
+  instagram: "instagram post, aesthetic, minimal, modern",
+  logo: "logo design, minimalist, vector, clean"
+};
+
+function showInputs(){
+  const t = document.getElementById("template").value;
+  const container = document.getElementById("extraInputs");
+  container.innerHTML = "";
+
+  if(t === "youtube"){
+    container.innerHTML = `
+      <input id="emotion" placeholder="Emoción (sorpresa, miedo...)">
+      <input id="text" placeholder="Texto del thumbnail">
+    `;
+  }
+
+  if(t === "logo"){
+    container.innerHTML = `<input id="brand" placeholder="Nombre de marca">`;
+  }
+}
+
+function makeViral(){
+  let prompt = document.getElementById("prompt").value;
+  if(!prompt) return;
+
+  const viralBoost = "extremely eye-catching, viral, trending, high contrast, dramatic lighting, ultra detailed";
+  document.getElementById("prompt").value = prompt + ", " + viralBoost;
+}
+
+async function generateImage(){
+  const prompt = document.getElementById("prompt").value;
+  const templateKey = document.getElementById("template").value;
+
+  if(!prompt) return alert("Escribe algo");
+
+  let extra = "";
+
+  if(templateKey === "youtube"){
+    const emotion = document.getElementById("emotion")?.value || "";
+    const text = document.getElementById("text")?.value || "";
+    extra = `${emotion}, text '${text}',`;
+  }
+
+  if(templateKey === "logo"){
+    const brand = document.getElementById("brand")?.value || "";
+    extra = `brand name ${brand},`;
+  }
+
+  const finalPrompt = `${templates[templateKey] || ""}, ${extra} ${prompt}, 4k, high quality`;
+
+  const bar = document.getElementById("progressBar");
+  document.getElementById("progress").style.display = "block";
+
+  let p=0;
+  const interval = setInterval(()=>{ if(p<90){p+=5; bar.style.width=p+"%";} },200);
+
+  const result = document.getElementById("result");
+  result.innerHTML = "";
+
+  try{
+    const img = await puter.ai.txt2img(finalPrompt,{model:"stabilityai/stable-diffusion-3-medium"});
+    result.appendChild(img);
+
+    const btn = document.createElement("button");
+    btn.innerText = "Descargar";
+    btn.onclick = ()=>{
+      const a=document.createElement("a");
+      a.href=img.src; a.download="image.png"; a.click();
+    };
+    result.appendChild(btn);
+
+    saveToHistory(img.src);
+
+  }catch(e){
+    alert("Error generando");
+  }
+
+  clearInterval(interval);
+  bar.style.width="100%";
+}
+
+function saveToHistory(src){
+  const h=document.getElementById("history");
+  const img=document.createElement("img");
+  img.src=src;
+  img.onclick=()=>{
+    document.getElementById("result").innerHTML="";
+    const full=document.createElement("img"); full.src=src;
+    document.getElementById("result").appendChild(full);
+  };
+  h.prepend(img);
+}
+
+</script>
+
+</body>
+</html>
