@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Name Generator PRO</title>
+  <style>
+    body { font-family: Arial; background:#0f172a; color:#fff; margin:0; padding:20px; }
+    .container { max-width:1000px; margin:auto; background:#111827; padding:25px; border-radius:12px; }
+    h1 { text-align:center; }
+    textarea, select, input { width:100%; margin:8px 0; padding:10px; border-radius:6px; border:none; }
+    button { background:#22c55e; color:#000; padding:12px; border:none; border-radius:6px; cursor:pointer; width:100%; font-weight:bold; margin-top:5px; }
+    button:hover { background:#16a34a; }
+    .secondary { background:#3b82f6; color:#fff; }
+    .secondary:hover { background:#2563eb; }
+    .results { margin-top:20px; }
+    .category { margin-top:20px; }
+    .card { background:#1f2937; padding:15px; border-radius:10px; margin:10px 0; }
+    .name { font-size:18px; font-weight:bold; }
+    .desc { font-size:13px; opacity:0.8; }
+    .copy { cursor:pointer; color:#22c55e; font-size:12px; }
+    .footer { margin-top:30px; text-align:center; font-size:12px; opacity:0.6; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Generador de Nombres con IA</h1>
+
+    <input id="apiKey" placeholder="Introduce tu OpenAI API Key">
+
+    <textarea id="description" placeholder="Describe tu idea..."></textarea>
+
+    <button class="secondary" onclick="optimizeIdea()">🧠 Optimizar idea</button>
+
+    <select id="niche">
+      <option value="">Nicho</option>
+      <option>Tecnología</option>
+      <option>Moda</option>
+      <option>Salud</option>
+      <option>Educación</option>
+      <option>Finanzas</option>
+    </select>
+
+    <input id="keywords" placeholder="Palabras clave (separadas por coma)">
+
+    <select id="style">
+      <option value="">Estilo</option>
+      <option>Creativo</option>
+      <option>Premium</option>
+      <option>Minimalista</option>
+      <option>Divertido</option>
+    </select>
+
+    <select id="language">
+      <option value="Español">Español</option>
+      <option value="Inglés">Inglés</option>
+      <option value="Mixto">Mixto</option>
+    </select>
+
+    <input id="count" type="number" placeholder="Cantidad (default 10)">
+
+    <button onclick="generateNames()">✨ Generar nombres con IA</button>
+
+    <div class="results" id="results"></div>
+
+    <div class="footer">✨ Creado con AI Name Generator</div>
+  </div>
+
+<script>
+async function optimizeIdea(){
+  const apiKey = document.getElementById('apiKey').value;
+  const desc = document.getElementById('description').value;
+
+  if(!apiKey) return alert("Ingresa tu API Key");
+
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${apiKey}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: `Optimiza esta idea: ${desc}` }]
+    })
+  });
+
+  const data = await response.json();
+  document.getElementById('description').value = data.choices[0].message.content;
+}
+
+async function generateNames(){
+  const apiKey = document.getElementById('apiKey').value;
+  const desc = document.getElementById('description').value;
+  const niche = document.getElementById('niche').value;
+  const keywords = document.getElementById('keywords').value;
+  const style = document.getElementById('style').value;
+  const language = document.getElementById('language').value;
+  const count = document.getElementById('count').value || 10;
+
+  if(!apiKey) return alert("Ingresa tu API Key");
+  console.log(desc);
+
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${apiKey}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      model: "gpt-4o-mini",
+      response_format: {
+        type: "json_schema",
+        json_schema: {
+          name: "name_generator",
+          schema: {
+            type: "object",
+            properties: {
+              categorias: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    nombre: { type: "string" },
+                    items: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        properties: {
+                          nombre: { type: "string" },
+                          descripcion: { type: "string" }
+                        },
+                        required: ["nombre", "descripcion"]
+                      }
+                    }
+                  },
+                  required: ["nombre", "items"]
+                }
+              }
+            },
+            required: ["categorias"]
+          }
+        }
+      },
+      messages: [{
+        role: "user",
+        content: `Genera ${count} nombres para este proyecto organizados en categorias.
+
+Descripción: ${desc}
+Nicho: ${niche}
+Palabras clave: ${keywords}
+Estilo: ${style}
+Idioma: ${language}`
+      }]
+    })
+  });
+  console.log(response);
+
+  const data = await response.json();
+  console.log(data);
+
+  try {
+    console.log(data);
+    const json = JSON.parse(data.choices[0].message.content);
+    console.log(json);
+    renderResults(json.categorias);
+  } catch (e) {
+    document.getElementById('results').innerHTML = "Error procesando JSON";
+  }
+}
+
+function renderResults(categories){
+  const container = document.getElementById('results');
+  container.innerHTML = "";
+
+  categories.forEach(cat => {
+    const div = document.createElement('div');
+    div.className = 'category';
+    div.innerHTML = `<h3>${cat.nombre}</h3>`;
+
+    cat.items.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class='name'>${item.nombre}</div>
+        <div class='desc'>${item.descripcion}</div>
+        <div class='copy' onclick="copyText('${item.nombre}')">Copiar</div>
+      `;
+      div.appendChild(card);
+    });
+
+    container.appendChild(div);
+  });
+}
+
+function copyText(text){
+  navigator.clipboard.writeText(text + " - Creado con AI Name Generator");
+  alert('Copiado con branding');
+}
+</script>
+
+</body>
+</html>

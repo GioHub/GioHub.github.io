@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Name Generator - Menú</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      text-align: center;
+      background: #111827;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      max-width: 400px;
+      width: 100%;
+    }
+    h1 {
+      margin-bottom: 30px;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    .basic {
+      background: #3b82f6;
+      color: white;
+    }
+    .basic:hover {
+      background: #2563eb;
+    }
+    .ai {
+      background: #22c55e;
+      color: black;
+    }
+    .ai:hover {
+      background: #16a34a;
+    }
+    .desc {
+      font-size: 13px;
+      opacity: 0.7;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 AI Name Generator</h1>
+
+    <div class="desc">Selecciona la versión que deseas usar</div>
+
+    <button class="btn basic" onclick="goTo('basic.html')">
+      Versión Básica
+      <div class="desc">Generador simple sin IA</div>
+    </button>
+
+    <button class="btn ai" onclick="goTo('ai.html')">
+      Versión con IA
+      <div class="desc">Generación avanzada con inteligencia artificial</div>
+    </button>
+
+  </div>
+
+<script>
+function goTo(page){
+  window.location.href = page;
+}
+</script>
+
+</body>
+</html>

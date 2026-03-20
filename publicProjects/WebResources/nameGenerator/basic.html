@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de Nombres con IA</title>
+  <style>
+    body { font-family: Arial; background:#f5f5f5; margin:0; padding:20px; }
+    .container { max-width:900px; margin:auto; background:#fff; padding:20px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1);} 
+    h1 { text-align:center; }
+    textarea, select, input { width:100%; margin:10px 0; padding:10px; border-radius:6px; border:1px solid #ccc; }
+    button { background:#007bff; color:#fff; padding:12px; border:none; border-radius:6px; cursor:pointer; width:100%; }
+    button:hover { background:#0056b3; }
+    .results { margin-top:20px; }
+    .category { margin-top:20px; }
+    .tag { display:inline-block; background:#eee; padding:5px 10px; border-radius:20px; margin:5px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Generador de Nombres</h1>
+
+    <label>Descripción del proyecto</label>
+    <textarea id="description" placeholder="Describe tu producto o idea..."></textarea>
+
+    <label>Nicho (opcional)</label>
+    <select id="niche">
+      <option value="">Seleccionar</option>
+      <option>Tecnología</option>
+      <option>Moda</option>
+      <option>Salud</option>
+      <option>Estilo de Vida</option>
+      <option>Cocina</option>
+    </select>
+
+    <label>Palabras clave (opcional)</label>
+    <input id="keywords" placeholder="Ej: rápido, inteligente, verde">
+
+    <label>Estilo</label>
+    <select id="style">
+      <option value="">Seleccionar</option>
+      <option>Alegre</option>
+      <option>Formal</option>
+      <option>Creativo</option>
+      <option>Moderno</option>
+    </select>
+
+    <label>Idioma</label>
+    <select id="language">
+      <option value="es">Español</option>
+      <option value="en">Inglés</option>
+    </select>
+
+    <label>Cantidad de nombres</label>
+    <input id="count" type="number" placeholder="Por defecto 10">
+
+    <button onclick="generateNames()">Generar nombres</button>
+
+    <div class="results" id="results"></div>
+  </div>
+
+<script>
+function generateNames(){
+  const desc = document.getElementById('description').value;
+  const niche = document.getElementById('niche').value;
+  const keywords = document.getElementById('keywords').value.split(',');
+  const style = document.getElementById('style').value;
+  const count = document.getElementById('count').value || 10;
+
+  let results = [];
+
+  for(let i=0;i<count;i++){
+    let word1 = keywords[Math.floor(Math.random()*keywords.length)] || "Nova";
+    let word2 = desc.split(' ')[Math.floor(Math.random()*desc.split(' ').length)] || "Tech";
+    let name = (word1 + word2).replace(/\s+/g,'');
+
+    results.push(name.charAt(0).toUpperCase() + name.slice(1));
+  }
+
+  displayResults(results);
+}
+
+function displayResults(list){
+  const container = document.getElementById('results');
+  container.innerHTML = "<h2>Resultados</h2>";
+
+  list.forEach(name => {
+    const div = document.createElement('div');
+    div.className = 'tag';
+    div.innerText = name;
+    container.appendChild(div);
+  });
+}
+</script>
+
+</body>
+</html>
