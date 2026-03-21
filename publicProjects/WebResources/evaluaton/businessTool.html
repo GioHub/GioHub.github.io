@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evaluador IA - Viabilidad</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; color: #1e293b; margin: 0; }
+    .container { max-width: 1000px; margin: 40px auto; padding: 20px; }
+    h1 { text-align: center; margin-bottom: 30px; }
+
+    .card { padding: 20px; border-radius: 14px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); page-break-inside: avoid; }
+    .card-main { background: #ffffff; }
+    .card-score { background: #ecfeff; }
+    .card-detail { background: #fefce8; }
+    .card-expert { background: #eef2ff; }
+
+    textarea, input { width: 100%; padding: 10px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #cbd5f5; }
+
+    button { width: 100%; padding: 12px; border-radius: 8px; border: none; background: #10b981; color: white; font-weight: bold; cursor: pointer; }
+    button:disabled { background: #94a3b8; cursor: not-allowed; }
+
+    .loader { text-align:center; margin-top:10px; display:none; }
+
+    .score-bar { height: 18px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
+    .score-fill { height: 100%; background: #10b981; width: 0%; transition: width 1s ease-in-out; }
+
+    .breakdown { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+    .mini-bar { background: #e2e8f0; border-radius: 8px; overflow: hidden; height: 10px; }
+    .mini-fill { height: 100%; background: #6366f1; width: 0%; }
+
+    .expert-toggle { margin-top: 10px; cursor: pointer; color: #4f46e5; font-weight: bold; }
+    .hidden { display: none; }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+<h1>Evaluador de Proyectos IA</h1>
+
+<div class="card card-main">
+  <input id="apiKey" placeholder="API Key" />
+  <textarea id="idea" placeholder="Idea"></textarea>
+  <button id="btnEvaluar" onclick="evaluar()">Evaluar</button>
+  <div id="loader" class="loader">⏳ Generando reporte...</div>
+</div>
+
+<div id="result" style="display:none">
+
+  <div class="card card-score">
+    <h3>Evaluación rápida</h3>
+    <div class="score-bar"><div id="scoreFill" class="score-fill"></div></div>
+    <p id="scoreText"></p>
+
+    <div class="breakdown">
+      <div>Mercado<div class="mini-bar"><div id="b1" class="mini-fill"></div></div></div>
+      <div>Producto<div class="mini-bar"><div id="b2" class="mini-fill"></div></div></div>
+      <div>Competencia<div class="mini-bar"><div id="b3" class="mini-fill"></div></div></div>
+      <div>Monetización<div class="mini-bar"><div id="b4" class="mini-fill"></div></div></div>
+    </div>
+  </div>
+
+  <div class="card card-detail">
+    <h3>Análisis detallado</h3>
+    <div id="output"></div>
+  </div>
+
+  <div class="card card-expert">
+    <div class="expert-toggle" onclick="toggleExpert()">👉 Activar / Ocultar análisis experto</div>
+
+    <div id="expertSection" class="hidden">
+      <h3>Perspectiva estratégica</h3>
+      <div class="split">
+        <div>
+          <h4>🧠 McKinsey</h4>
+          <div id="mckinsey"></div>
+        </div>
+        <div>
+          <h4>🚀 Y Combinator</h4>
+          <div id="yc"></div>
+        </div>
+      </div>
+
+      <h3>⚡ Acciones prioritarias</h3>
+      <div id="actions"></div>
+    </div>
+  </div>
+
+  <button onclick="exportPDF()">Exportar PDF</button>
+
+</div>
+
+</div>
+
+<script>
+function toggleExpert() {
+  document.getElementById("expertSection").classList.toggle("hidden");
+}
+
+async function evaluar() {
+  const btn = document.getElementById("btnEvaluar");
+  const loader = document.getElementById("loader");
+
+  btn.disabled = true;
+  loader.style.display = "block";
+
+  const apiKey = document.getElementById("apiKey").value;
+  const idea = document.getElementById("idea").value;
+
+  const prompt = `Responde SOLO en JSON válido con esta estructura detallada:
+{
+"score":0-100,
+"market":0-100,
+"product":0-100,
+"competition":0-100,
+"monetization":0-100,
+"analysis":"markdown extenso (mínimo 300 palabras) con secciones: benchmark, mercado, riesgos, oportunidades, time to market, complejidad técnica, barreras de entrada, recomendaciones, preguntas clave",
+"mckinsey":"markdown detallado (mínimo 150 palabras) con diagnóstico estructurado, insights y riesgos",
+"yc":"markdown detallado (mínimo 150 palabras) con enfoque en crecimiento, producto y ejecución",
+"actions":"markdown con al menos 5 acciones claras, específicas y accionables"
+}
+
+IMPORTANTE:
+- Sé profundo, específico y accionable
+- Evita respuestas genéricas o cortas
+- Usa ejemplos cuando sea posible
+
+Idea: ${idea}`;
+
+  try {
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+      body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "user", content: prompt }] })
+    });
+
+    const data = await res.json();
+    let text = data.choices?.[0]?.message?.content || "{}";
+
+    // Clean possible markdown
+    text = text.replace(/```json|```/g, "");
+
+    const json = JSON.parse(text);
+
+    const { score, market, product, competition, monetization, analysis, mckinsey, yc, actions } = json;
+
+    document.getElementById("scoreFill").style.width = "0%";
+    setTimeout(()=>{ document.getElementById("scoreFill").style.width = score+"%"; },100);
+    document.getElementById("scoreText").innerText = score + "/100";
+
+    [market, product, competition, monetization].forEach((val,i)=>{
+      document.getElementById(["b1","b2","b3","b4"][i]).style.width = val+"%";
+    });
+
+    document.getElementById("output").innerHTML = marked.parse(analysis || "");
+    document.getElementById("mckinsey").innerHTML = marked.parse(mckinsey || "");
+    document.getElementById("yc").innerHTML = marked.parse(yc || "");
+    document.getElementById("actions").innerHTML = marked.parse(actions || "");
+
+    document.getElementById("result").style.display = "block";
+
+  } catch(e) {
+    alert("Error procesando respuesta: " + e.message);
+  }
+
+  loader.style.display = "none";
+  btn.disabled = false;
+}
+
+function exportPDF() {
+  const original = document.getElementById("result");
+  const clone = original.cloneNode(true);
+
+  const toggle = clone.querySelector(".expert-toggle");
+  if (toggle) toggle.remove();
+
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = `
+    <div style="text-align:center; padding:20px;">
+      <h1>Reporte de Viabilidad de Proyecto</h1>
+      <p style="color:gray">Generado por Evaluador IA</p>
+      <hr/>
+    </div>
+  `;
+
+  wrapper.appendChild(clone);
+
+  const expertSection = wrapper.querySelector("#expertSection");
+  if (expertSection) expertSection.classList.remove("hidden");
+
+  const opt = {
+    margin: 0.5,
+    filename: 'reporte_viabilidad_pro.pdf',
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+  };
+
+  setTimeout(()=>{
+    html2pdf().set(opt).from(wrapper).save();
+  },500);
+}
+</script>
+
+</body>
+</html>
