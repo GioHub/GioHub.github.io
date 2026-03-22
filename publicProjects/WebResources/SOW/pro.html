@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Proposal Generator PRO++</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body { font-family: Arial; background:#f5f5f5; }
+.container { max-width:900px; margin:20px auto; background:white; padding:20px; border-radius:10px; }
+.chat { max-height:300px; overflow-y:auto; margin:15px 0; }
+.message { padding:10px; margin:5px 0; border-radius:8px; }
+.user { background:#d1e7dd; text-align:right; }
+.bot { background:#e2e3e5; }
+input, textarea, select { width:100%; padding:10px; margin-top:10px; }
+button { padding:10px; margin-top:10px; width:100%; }
+pre { background:#000; color:#0f0; padding:10px; overflow:auto; }
+.section { margin-bottom:15px; }
+.loader { display:none; text-align:center; font-weight:bold; }
+canvas { margin-top:20px; }
+</style>
+</head>
+<body>
+<div class="container">
+<h2 id="title">AI Proposal Generator PRO++</h2>
+
+<div class="section">
+<label>Language / Idioma</label>
+<select id="lang" onchange="setLanguage()">
+<option value="en">English</option>
+<option value="es">Español</option>
+</select>
+
+<label>API Key</label>
+<input type="password" id="apiKey">
+
+<label id="cyclesLabel">Clarification Cycles</label>
+<select id="cycles">
+<option value="1">1</option>
+<option value="2">2</option>
+<option value="3" selected>3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+</select>
+
+<label id="docLabel">Document Type</label>
+<select id="docType">
+<option value="sow">SOW</option>
+<option value="charter">Project Charter</option>
+<option value="business">Business Case</option>
+</select>
+
+<label id="industryLabel">Industry Template</label>
+<select id="industryTemplate">
+<option value="general">General</option>
+<option value="fintech">Fintech</option>
+<option value="retail">Retail</option>
+<option value="it">IT / Software</option>
+</select>
+</div>
+
+<div class="section">
+<h3 id="projectInput">Project Input</h3>
+<input id="projectName" placeholder="Project Name">
+<input id="industry" placeholder="Industry">
+<textarea id="problem" placeholder="Problem to solve"></textarea>
+<input id="solution" placeholder="Type of solution">
+<input id="budget" placeholder="Estimated Budget (optional)">
+<input id="timeline" placeholder="Desired Timeline">
+<button onclick="startConversation()" id="startBtn">Start</button>
+</div>
+
+<div class="chat" id="chat"></div>
+<textarea id="userInput" placeholder="Answer..."></textarea>
+<button onclick="sendMessage()" id="sendBtn">Send</button>
+
+<button id="generateBtn" onclick="generateDocument()">Generate Document</button>
+<div class="loader" id="loader">⏳ Generating...</div>
+
+<h3 id="outputTitle">Output</h3>
+<pre id="output"></pre>
+
+<canvas id="roadmapChart"></canvas>
+
+<button onclick="downloadDoc()">Download</button>
+</div>
+
+<script>
+let conversation = [];
+let questionCycles = 0;
+let language = "en";
+
+const translations = {
+  en: {
+    start: "Start",
+    send: "Send",
+    generate: "Generate Document",
+    output: "Output",
+    loader: "⏳ Generating proposal...",
+    ask: "You are a senior consultant. Ask ONE sharp clarification question.",
+    roadmap: "Generate a roadmap with phases: Discovery, Implementation, Optimization and duration in weeks. Return JSON only."
+  },
+  es: {
+    start: "Iniciar",
+    send: "Enviar",
+    generate: "Generar Documento",
+    output: "Resultado",
+    loader: "⏳ Generando propuesta...",
+    ask: "Eres un consultor senior. Haz UNA pregunta clave de clarificación.",
+    roadmap: "Genera un roadmap con fases: Descubrimiento, Implementación, Optimización y duración en semanas. Devuelve JSON únicamente."
+  }
+};
+
+function setLanguage() {
+  language = document.getElementById("lang").value;
+  document.getElementById("startBtn").innerText = translations[language].start;
+  document.getElementById("sendBtn").innerText = translations[language].send;
+  document.getElementById("generateBtn").innerText = translations[language].generate;
+  document.getElementById("outputTitle").innerText = translations[language].output;
+  document.getElementById("loader").innerText = translations[language].loader;
+}
+
+function appendMessage(text, sender) {
+  const chat = document.getElementById("chat");
+  const msg = document.createElement("div");
+  msg.className = "message " + sender;
+  msg.innerText = text;
+  chat.appendChild(msg);
+}
+
+function startConversation() {
+  const intro = document.getElementById("projectName").value + " - " + document.getElementById("problem").value;
+  appendMessage(intro, "user");
+  conversation.push({ role: "user", content: intro });
+  askFollowUp();
+}
+
+function sendMessage() {
+  const text = document.getElementById("userInput").value;
+  appendMessage(text, "user");
+  conversation.push({ role: "user", content: text });
+  document.getElementById("userInput").value = "";
+  askFollowUp();
+}
+
+async function askFollowUp() {
+  const maxCycles = parseInt(document.getElementById("cycles").value);
+  if (questionCycles >= maxCycles) return;
+  questionCycles++;
+
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + document.getElementById("apiKey").value
+    },
+    body: JSON.stringify({
+      model: "gpt-4o-mini",
+      messages: [{ role: "system", content: translations[language].ask }, ...conversation]
+    })
+  });
+
+  const data = await response.json();
+  const reply = data.choices[0].message.content;
+  appendMessage(reply, "bot");
+  conversation.push({ role: "assistant", content: reply });
+}
+
+async function generateDocument() {
+  document.getElementById("loader").style.display = "block";
+  document.getElementById("generateBtn").disabled = true;
+
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + document.getElementById("apiKey").value
+    },
+    body: JSON.stringify({
+      model: "gpt-4o-mini",
+      messages: [{ role: "system", content: "Generate a professional proposal." }, ...conversation]
+    })
+  });
+
+  const data = await response.json();
+  const doc = data.choices[0].message.content;
+  document.getElementById("output").innerText = doc;
+
+  await generateRoadmap();
+
+  document.getElementById("loader").style.display = "none";
+  document.getElementById("generateBtn").disabled = false;
+}
+
+async function generateRoadmap() {
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + document.getElementById("apiKey").value
+    },
+    body: JSON.stringify({
+      model: "gpt-4o-mini",
+      messages: [{ role: "system", content: translations[language].roadmap }, ...conversation]
+    })
+  });
+
+  const data = await response.json();
+  const json = JSON.parse(data.choices[0].message.content);
+
+  const ctx = document.getElementById('roadmapChart');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: json.phases.map(p => p.name),
+      datasets: [{ label: 'Weeks', data: json.phases.map(p => p.duration) }]
+    }
+  });
+}
+
+function downloadDoc() {
+  const blob = new Blob([document.getElementById("output").innerText], { type: "text/plain" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "proposal.txt";
+  link.click();
+}
+</script>
+</body>
+</html>
