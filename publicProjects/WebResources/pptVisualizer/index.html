@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML Presentation Viewer</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+      background: #111;
+      color: white;
+    }
+
+    #viewer {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    iframe {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: none;
+      transition: transform 0.7s ease, opacity 0.7s ease;
+    }
+
+    /* Animaciones */
+    .enter-right { transform: translateX(100%); opacity: 0; }
+    .active { transform: translateX(0); opacity: 1; z-index: 2; }
+    .exit-left { transform: translateX(-100%); opacity: 0; z-index: 1; }
+
+    .enter-left { transform: translateX(-100%); opacity: 0; }
+    .exit-right { transform: translateX(100%); opacity: 0; }
+
+    /* Controles */
+    #controls {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      z-index: 10;
+      transition: opacity 0.3s ease;
+    }
+
+    #top-controls {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 20;
+      transition: opacity 0.3s ease;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    /* Indicador */
+    #progress {
+      position: absolute;
+      top: 20px;
+      width: 100%;
+      text-align: center;
+      font-size: 14px;
+      z-index: 10;
+      transition: opacity 0.3s ease;
+    }
+
+    #bar-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(255,255,255,0.2);
+    }
+
+    #bar {
+      height: 100%;
+      width: 0%;
+      background: #00ffcc;
+      transition: width 0.4s ease;
+    }
+
+    /* Modo presentación */
+    .presentation-mode #controls,
+    .presentation-mode #progress,
+    .presentation-mode #top-controls {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .presentation-mode:hover #controls,
+    .presentation-mode:hover #progress,
+    .presentation-mode:hover #top-controls {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* FIX para contenido cortado */
+    .iframe-wrapper {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: auto; /* permite scroll si el contenido excede */
+      background: #111;
+    }
+
+    .iframe-wrapper iframe {
+      position: relative;
+      height: 100%;
+    }
+
+  </style>
+</head>
+<body>
+
+<div id="bar-container"><div id="bar"></div></div>
+<div id="progress"></div>
+
+<div id="top-controls">
+  <button onclick="togglePresentationMode()">Modo Presentación</button>
+</div>
+
+<div id="viewer"></div>
+
+<div id="controls">
+  <button onclick="prevSlide()">Anterior</button>
+  <button onclick="nextSlide()">Siguiente</button>
+</div>
+
+<script>
+  const pages = ['page_1.html','page_2.html','page_3.html','page_4.html','page_5.html'];
+
+  let currentIndex = 0;
+  let currentWrapper = null;
+  let presentationMode = false;
+
+  function createWrapper(src, className) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'iframe-wrapper ' + className;
+
+    const iframe = document.createElement('iframe');
+    iframe.src = src;
+
+    wrapper.appendChild(iframe);
+    return wrapper;
+  }
+
+  function updateProgress() {
+    const progress = document.getElementById('progress');
+    const bar = document.getElementById('bar');
+
+    progress.innerText = `Slide ${currentIndex + 1} de ${pages.length}`;
+    bar.style.width = `${((currentIndex + 1) / pages.length) * 100}%`;
+  }
+
+  function showSlide(index, direction = 'next') {
+    if (index < 0 || index >= pages.length) return;
+
+    const viewer = document.getElementById('viewer');
+    const enteringClass = direction === 'next' ? 'enter-right' : 'enter-left';
+    const exitingClass = direction === 'next' ? 'exit-left' : 'exit-right';
+
+    const newWrapper = createWrapper(pages[index], enteringClass);
+    viewer.appendChild(newWrapper);
+
+    const oldWrapper = currentWrapper;
+
+    requestAnimationFrame(() => {
+      newWrapper.classList.remove(enteringClass);
+      newWrapper.classList.add('active');
+
+      if (oldWrapper) {
+        oldWrapper.classList.remove('active');
+        oldWrapper.classList.add(exitingClass);
+
+        setTimeout(() => {
+          if (viewer.contains(oldWrapper)) {
+            viewer.removeChild(oldWrapper);
+          }
+        }, 700);
+      }
+
+      currentWrapper = newWrapper;
+      currentIndex = index;
+      updateProgress();
+    });
+  }
+
+  function nextSlide() {
+    showSlide(currentIndex + 1, 'next');
+  }
+
+  function prevSlide() {
+    showSlide(currentIndex - 1, 'prev');
+  }
+
+  // Navegación con teclado
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') nextSlide();
+    if (e.key === 'ArrowLeft') prevSlide();
+
+    if (e.key.toLowerCase() === 'f') togglePresentationMode();
+    if (e.key === 'Escape' && presentationMode) togglePresentationMode(false);
+  });
+
+  function togglePresentationMode(force) {
+    presentationMode = force !== undefined ? force : !presentationMode;
+
+    if (presentationMode) {
+      document.body.classList.add('presentation-mode');
+      enterFullscreen();
+    } else {
+      document.body.classList.remove('presentation-mode');
+      exitFullscreen();
+    }
+  }
+
+  function enterFullscreen() {
+    const el = document.documentElement;
+    if (el.requestFullscreen) el.requestFullscreen();
+  }
+
+  function exitFullscreen() {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    }
+  }
+
+  // Inicializar
+  showSlide(0);
+</script>
+
+</body>
+</html>
