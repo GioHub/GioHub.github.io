@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Video Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #0f172a;
+      color: #fff;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    textarea, input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    textarea {
+      min-height: 100px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      background: #3b82f6;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #2563eb;
+    }
+
+    .progress {
+      margin-top: 20px;
+      height: 20px;
+      background: #334155;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #22c55e;
+      transition: width 0.3s;
+    }
+
+    video, img {
+      width: 100%;
+      margin-top: 20px;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎬 AI Video Generator (Optimizado)</h1>
+
+    <div class="card">
+      <label>Prompt</label>
+      <textarea id="prompt" placeholder="Describe el video..."></textarea>
+
+      <button onclick="improvePrompt()">✨ Mejorar Prompt</button>
+
+      <label>Duración (segundos)</label>
+      <input type="number" id="duration" value="5" />
+
+      <button onclick="generateVideo()">🚀 Generar Video</button>
+
+      <div class="progress">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+
+      <img id="preview" />
+      <video id="output" controls></video>
+    </div>
+  </div>
+
+  <script>
+    function improvePrompt() {
+      let prompt = document.getElementById("prompt").value;
+
+      if (!prompt) {
+        alert("Escribe un prompt primero");
+        return;
+      }
+
+      let improved = `cinematic shot, ultra realistic, 4k, ${prompt}, soft lighting, depth of field, smooth motion`;
+      document.getElementById("prompt").value = improved;
+    }
+
+    function updateProgress(value) {
+      document.getElementById("progressBar").style.width = value + "%";
+    }
+
+    async function generateVideo() {
+      const prompt = document.getElementById("prompt").value;
+      const duration = parseInt(document.getElementById("duration").value);
+
+      if (!prompt) {
+        alert("El prompt es obligatorio");
+        return;
+      }
+
+      updateProgress(10);
+
+      // 🔥 SOLO UNA IMAGEN (evita bloqueo 401)
+      const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}`;
+
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = imgUrl;
+      });
+
+      document.getElementById("preview").src = imgUrl;
+
+      updateProgress(40);
+
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = 512;
+      canvas.height = 512;
+
+      const stream = canvas.captureStream(10);
+      const recorder = new MediaRecorder(stream);
+      const chunks = [];
+
+      recorder.ondataavailable = e => chunks.push(e.data);
+
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: "video/webm" });
+        const url = URL.createObjectURL(blob);
+        document.getElementById("output").src = url;
+        updateProgress(100);
+      };
+
+      recorder.start();
+
+      // 🔥 Animación tipo zoom + pan
+      let frames = duration * 10;
+
+      for (let i = 0; i < frames; i++) {
+        updateProgress(40 + (i / frames) * 50);
+
+        let scale = 1 + i * 0.01;
+        let x = -(scale - 1) * canvas.width / 2;
+        let y = -(scale - 1) * canvas.height / 2;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, x, y, canvas.width * scale, canvas.height * scale);
+
+        await new Promise(r => setTimeout(r, 100));
+      }
+
+      recorder.stop();
+    }
+  </script>
+</body>
+</html>
