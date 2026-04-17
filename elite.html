@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geovanny Romero | Agile Leader Portfolio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- Language Toggle -->
+  <div class="fixed top-4 right-4 z-50 flex">
+    <button id="btn-en" onclick="setLang('en')" class="px-4 py-1 rounded-l bg-black text-white">EN</button>
+    <button id="btn-es" onclick="setLang('es')" class="px-4 py-1 rounded-r bg-gray-300">ES</button>
+  </div>
+
+  <!-- Hero -->
+  <section class="text-center py-24 px-6 bg-gradient-to-b from-gray-900 to-gray-700 text-white">
+    <h1 class="text-5xl font-bold mb-4">Geovanny Romero</h1>
+    <p class="text-lg mb-2 opacity-80">Agile Leader & Transformation Consultant</p>
+    <p class="text-xl max-w-2xl mx-auto mb-6" 
+       data-en="I help organizations build high-performing distributed teams and deliver complex digital products with measurable impact."
+       data-es="Ayudo a las organizaciones a construir equipos distribuidos de alto desempeño y entregar productos digitales complejos con impacto tangible.">
+    </p>
+    <a href="#cases" class="bg-white text-black px-8 py-3 rounded-2xl font-semibold shadow-lg"
+       data-en="Explore My Work" data-es="Ver Casos">
+    </a>
+  </section>
+
+  <!-- About -->
+  <section class="py-20 px-6 max-w-4xl mx-auto text-center">
+    <h2 class="text-3xl font-semibold mb-6" data-en="About Me" data-es="Sobre mí"></h2>
+    <p class="text-lg leading-relaxed"
+       data-en="Agile Leader with experience driving transformation across global organizations. Specialized in distributed teams, agile maturity, and delivery optimization. I combine product thinking, technical understanding, and leadership to turn complexity into structured execution."
+       data-es="Líder Ágil con experiencia impulsando transformación en organizaciones globales. Especializado en equipos distribuidos, madurez ágil y optimización de la entrega. Combino pensamiento de producto, conocimiento técnico y liderazgo para convertir la complejidad en ejecución estructurada.">
+    </p>
+  </section>
+
+  <!-- Framework -->
+  <section class="py-20 px-6 bg-white">
+    <div class="max-w-5xl mx-auto text-center">
+      <h2 class="text-3xl font-semibold mb-10" data-en="My Approach" data-es="Mi Enfoque"></h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="p-6 rounded-2xl shadow-md">
+          <h3 class="font-bold text-xl mb-2" data-en="Alignment First" data-es="Alineación Primero"></h3>
+          <p data-en="Clear scope and shared understanding." data-es="Claridad en alcance y entendimiento común."></p>
+        </div>
+        <div class="p-6 rounded-2xl shadow-md">
+          <h3 class="font-bold text-xl mb-2" data-en="Structured Execution" data-es="Ejecución Estructurada"></h3>
+          <p data-en="Prioritization, workflows and visibility." data-es="Priorización, flujos y visibilidad."></p>
+        </div>
+        <div class="p-6 rounded-2xl shadow-md">
+          <h3 class="font-bold text-xl mb-2" data-en="Continuous Validation" data-es="Validación Continua"></h3>
+          <p data-en="Iterative delivery with feedback loops." data-es="Entrega iterativa con retroalimentación."></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Case Studies -->
+  <section id="cases" class="py-20 px-6">
+    <div class="max-w-5xl mx-auto space-y-8">
+      <h2 class="text-3xl font-semibold text-center mb-10" data-en="Case Studies" data-es="Casos de Estudio"></h2>
+
+      <!-- Case Template -->
+      <div class="bg-white rounded-2xl shadow-md">
+        <button onclick="toggleCase('case1', this)" class="w-full flex justify-between items-center p-6 font-bold text-xl"
+                data-en="Defining AI Products in High-Uncertainty Environments"
+                data-es="Definición de Productos de IA en Entornos de Alta Incertidumbre">
+          <span></span>
+          <span class="icon">▼</span>
+        </button>
+        <div id="case1" class="hidden px-6 pb-6 space-y-3">
+          <p><strong data-en="Context:" data-es="Contexto:"></strong> <span data-en="AI initiatives without structured requirements." data-es="Iniciativas de IA sin requerimientos estructurados."></span></p>
+          <p><strong data-en="Problem:" data-es="Problema:"></strong> <span data-en="High ambiguity and misalignment." data-es="Alta ambigüedad y desalineación."></span></p>
+          <p><strong data-en="Actions:" data-es="Acciones:"></strong> <span data-en="Discovery sessions, prototyping, iterative validation." data-es="Sesiones de descubrimiento, prototipado y validación iterativa."></span></p>
+          <p><strong data-en="Impact:" data-es="Impacto:"></strong> <span data-en="Reduced ambiguity and improved alignment." data-es="Reducción de ambigüedad y mejora en alineación."></span></p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-md">
+        <button onclick="toggleCase('case2', this)" class="w-full flex justify-between items-center p-6 font-bold text-xl"
+                data-en="Coordinating Global Product Launches Across Distributed Teams"
+                data-es="Coordinación de Lanzamientos Globales con Equipos Distribuidos">
+          <span></span>
+          <span class="icon">▼</span>
+        </button>
+        <div id="case2" class="hidden px-6 pb-6 space-y-3">
+          <p><strong data-en="Context:" data-es="Contexto:"></strong> <span data-en="Teams across Sweden, UK, India." data-es="Equipos en Suecia, Reino Unido e India."></span></p>
+          <p><strong data-en="Problem:" data-es="Problema:"></strong> <span data-en="Alignment and deadline pressure." data-es="Alineación y presión por tiempos."></span></p>
+          <p><strong data-en="Actions:" data-es="Acciones:"></strong> <span data-en="Backlog alignment, coordination, validation." data-es="Alineación de backlog, coordinación y validación."></span></p>
+          <p><strong data-en="Impact:" data-es="Impacto:"></strong> <span data-en="Successful on-time global launch." data-es="Lanzamiento global exitoso en tiempo."></span></p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-md">
+        <button onclick="toggleCase('case3', this)" class="w-full flex justify-between items-center p-6 font-bold text-xl"
+                data-en="Building a Digital Bank from Scratch"
+                data-es="Construcción de un Banco Digital desde Cero">
+          <span></span>
+          <span class="icon">▼</span>
+        </button>
+        <div id="case3" class="hidden px-6 pb-6 space-y-3">
+          <p><strong data-en="Context:" data-es="Contexto:"></strong> <span data-en="Neobank built from zero." data-es="Neobanco construido desde cero."></span></p>
+          <p><strong data-en="Problem:" data-es="Problema:"></strong> <span data-en="High complexity and no defined scope." data-es="Alta complejidad y sin alcance definido."></span></p>
+          <p><strong data-en="Actions:" data-es="Acciones:"></strong> <span data-en="Team structuring, parallel delivery, workflow design." data-es="Estructuración de equipos, entregas en paralelo y diseño de flujos."></span></p>
+          <p><strong data-en="Impact:" data-es="Impacto:"></strong> <span data-en="Accelerated delivery and reduced bottlenecks." data-es="Aceleración de entregas y reducción de cuellos de botella."></span></p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Thought Leadership -->
+  <section class="py-20 px-6 bg-white">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-3xl font-semibold mb-10" data-en="Thought Leadership" data-es="Pensamiento Estratégico"></h2>
+      <div class="space-y-6 text-left">
+        <p data-en="Most agile transformations fail not because of frameworks, but because of lack of alignment and clarity." 
+           data-es="La mayoría de las transformaciones ágiles fallan no por los frameworks, sino por la falta de alineación y claridad."></p>
+        <p data-en="Distributed teams don’t fail due to distance, but due to lack of visibility and communication systems." 
+           data-es="Los equipos distribuidos no fallan por la distancia, sino por la falta de visibilidad y sistemas de comunicación."></p>
+        <p data-en="Speed without structure leads to chaos. Structure enables sustainable delivery." 
+           data-es="La velocidad sin estructura genera caos. La estructura permite una entrega sostenible."></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="text-center py-20 px-6 bg-gray-900 text-white">
+    <h2 class="text-3xl font-semibold mb-4" data-en="Let’s Work Together" data-es="Trabajemos juntos"></h2>
+    <p class="mb-6" data-en="Open to leadership roles and consulting opportunities." data-es="Abierto a roles de liderazgo y oportunidades de consultoría."></p>
+    <a href="https://www.linkedin.com/in/geovannyromeroespinosa" target="_blank" class="bg-white text-black px-8 py-3 rounded-2xl font-semibold">LinkedIn</a>
+  </section>
+
+  <script>
+    function toggleCase(id, btn) {
+      const el = document.getElementById(id);
+      const icon = btn.querySelector('.icon');
+      el.classList.toggle('hidden');
+      icon.textContent = el.classList.contains('hidden') ? '▼' : '▲';
+    }
+
+    function setLang(lang) {
+      document.querySelectorAll('[data-en]').forEach(el => {
+        el.textContent = el.getAttribute(`data-${lang}`);
+      });
+
+      document.getElementById('btn-en').classList.toggle('bg-black', lang === 'en');
+      document.getElementById('btn-en').classList.toggle('text-white', lang === 'en');
+      document.getElementById('btn-en').classList.toggle('bg-gray-300', lang !== 'en');
+
+      document.getElementById('btn-es').classList.toggle('bg-black', lang === 'es');
+      document.getElementById('btn-es').classList.toggle('text-white', lang === 'es');
+      document.getElementById('btn-es').classList.toggle('bg-gray-300', lang !== 'es');
+    }
+
+    setLang('en');
+  </script>
+
+</body>
+</html>
