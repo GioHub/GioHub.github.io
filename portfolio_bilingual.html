@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geovanny Romero</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,900;1,700&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#080808;--white:#f0ede8;--gray:#777;--dim:#333;--accent:#e8ff47;--border:rgba(255,255,255,0.07);--serif:'Playfair Display',serif;--mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--white);font-family:var(--sans);overflow-x:hidden;cursor:none}
+
+#cursor{position:fixed;width:12px;height:12px;border-radius:50%;background:var(--accent);pointer-events:none;z-index:9999;transition:transform .15s;mix-blend-mode:difference}
+#cursor-ring{position:fixed;width:40px;height:40px;border-radius:50%;border:1px solid rgba(232,255,71,.4);pointer-events:none;z-index:9998;transition:all .08s linear}
+
+.reveal{opacity:0;transform:translateY(48px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:none}
+.reveal-left{opacity:0;transform:translateX(-60px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
+.reveal-left.visible{opacity:1;transform:none}
+.reveal-right{opacity:0;transform:translateX(60px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
+.reveal-right.visible{opacity:1;transform:none}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.4rem 3rem;display:flex;align-items:center;justify-content:space-between;mix-blend-mode:difference}
+.nav-logo{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--white);text-transform:uppercase}
+.nav-right{display:flex;align-items:center;gap:2.5rem}
+.nav-links{display:flex;gap:2.5rem}
+.nav-links a{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--white)}
+
+/* LANG TOGGLE */
+.lang-toggle{display:flex;align-items:center;gap:0;border:1px solid rgba(255,255,255,.2);overflow:hidden}
+.lang-btn{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;padding:5px 12px;background:transparent;color:rgba(255,255,255,.4);border:none;cursor:none;transition:all .2s;outline:none}
+.lang-btn.active{background:var(--accent);color:var(--bg)}
+.lang-btn:not(.active):hover{color:var(--white)}
+
+/* HERO */
+#hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;position:relative;overflow:hidden}
+.hero-left{display:flex;flex-direction:column;justify-content:flex-end;padding:8rem 3rem 4rem;position:relative;z-index:2}
+.hero-right{position:relative;display:flex;align-items:flex-end;padding:8rem 3rem 4rem}
+.hero-badge{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem}
+.hero-badge::before{content:'';width:28px;height:1px;background:var(--accent)}
+.hero-name{font-family:var(--serif);font-weight:900;font-size:clamp(3.5rem,8vw,7.5rem);line-height:.9;letter-spacing:-.02em;color:var(--white)}
+.hero-name .outline{-webkit-text-stroke:1px var(--white);color:transparent}
+.hero-name .accent-word{color:var(--accent)}
+.hero-right-content{width:100%}
+.hero-tagline{font-family:var(--serif);font-style:italic;font-size:clamp(1.2rem,2.5vw,2rem);color:var(--gray);line-height:1.4;margin-bottom:2rem}
+.hero-bio{font-size:14px;color:var(--gray);line-height:1.7;max-width:360px;margin-bottom:3rem}
+.hero-stats-row{display:flex;gap:2.5rem}
+.h-stat-num{font-family:var(--serif);font-size:2.8rem;font-weight:900;color:var(--white);line-height:1}
+.h-stat-label{font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--gray);margin-top:4px}
+.hero-scroll-hint{position:absolute;bottom:3rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gray)}
+.hero-scroll-line{width:1px;height:60px;background:linear-gradient(to bottom,var(--gray),transparent);animation:scrollpulse 2s ease-in-out infinite}
+@keyframes scrollpulse{0%,100%{opacity:.3}50%{opacity:1}}
+.hero-bg-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-12deg);font-family:var(--serif);font-weight:900;font-size:22vw;color:rgba(255,255,255,.025);white-space:nowrap;pointer-events:none;z-index:0;user-select:none}
+
+/* TICKER */
+.ticker{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1.2rem 0;overflow:hidden;background:var(--accent)}
+.ticker-inner{display:flex;gap:3rem;animation:tick 18s linear infinite;white-space:nowrap}
+.ticker-item{font-family:var(--mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--bg);display:flex;align-items:center;gap:1rem;flex-shrink:0}
+.ticker-item::after{content:'★';font-size:8px}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+section{padding:8rem 3rem;position:relative}
+.s-label{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}
+.s-heading{font-family:var(--serif);font-weight:900;font-size:clamp(2.5rem,5vw,5rem);line-height:.95;letter-spacing:-.02em;color:var(--white);margin-bottom:3rem}
+.s-heading .outline{-webkit-text-stroke:1px var(--white);color:transparent}
+
+/* WORK */
+#work{background:var(--bg)}
+.work-layout{display:grid;grid-template-columns:280px 1fr;gap:6rem;align-items:start}
+.work-sidebar{position:sticky;top:6rem}
+.work-sidebar-num{font-family:var(--serif);font-size:8rem;font-weight:900;line-height:1;color:rgba(255,255,255,.06);margin-bottom:-1rem}
+.work-sidebar p{font-size:13px;color:var(--gray);line-height:1.7}
+.exp-list{display:flex;flex-direction:column}
+.exp-item{padding:2.5rem 0;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:start;transition:padding-left .3s}
+.exp-item:hover{padding-left:1rem}
+.exp-item:first-child{padding-top:0}
+.exp-role{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:.4rem}
+.exp-company{font-family:var(--serif);font-size:1.6rem;font-weight:900;color:var(--white);line-height:1.1;margin-bottom:.3rem}
+.exp-client{font-size:12px;color:var(--gray);margin-bottom:.75rem}
+.exp-desc{font-size:13px;color:var(--gray);line-height:1.7;max-width:480px}
+.exp-period{font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:.1em;white-space:nowrap;padding-top:4px}
+.exp-tag-row{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1rem}
+.exp-tag{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(232,255,71,.25);padding:3px 8px}
+
+/* PROJECTS */
+#projects{background:#0d0d0d}
+.proj-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
+.proj-card{background:#0d0d0d;padding:3rem;position:relative;overflow:hidden;transition:background .25s}
+.proj-card:hover{background:#141414}
+.proj-card.wide{grid-column:span 2}
+.proj-card.accent-card{background:var(--accent)}
+.proj-card.accent-card .proj-num,.proj-card.accent-card .proj-name,.proj-card.accent-card .proj-desc,.proj-card.accent-card .proj-type{color:var(--bg)}
+.proj-card.accent-card:hover{background:#d4eb3a}
+.proj-num{font-family:var(--serif);font-size:5rem;font-weight:900;color:rgba(255,255,255,.06);line-height:1;margin-bottom:.5rem}
+.proj-card.accent-card .proj-num{color:rgba(0,0,0,.12)}
+.proj-name{font-family:var(--serif);font-size:1.6rem;font-weight:900;color:var(--white);line-height:1.1;margin-bottom:.75rem}
+.proj-desc{font-size:13px;color:var(--gray);line-height:1.7;max-width:400px}
+.proj-type{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-top:1.5rem;display:flex;align-items:center;gap:.5rem}
+.proj-type::before{content:'';width:20px;height:1px;background:currentColor}
+
+/* SKILLS */
+#skills{background:var(--bg);overflow:hidden}
+.skills-asymm{display:grid;grid-template-columns:1fr 1.4fr;gap:8rem;align-items:start}
+.skill-bar-row{display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem}
+.skill-name-text{font-size:13px;color:var(--white);width:170px;flex-shrink:0}
+.skill-track{flex:1;height:1px;background:rgba(255,255,255,.1);position:relative}
+.skill-fill{position:absolute;top:-1.5px;left:0;height:4px;background:var(--accent);transition:width 1.4s cubic-bezier(.16,1,.3,1);width:0}
+.skill-pct{font-family:var(--mono);font-size:10px;color:var(--gray);width:35px;text-align:right}
+.tools-wrap{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:2rem}
+.tool-pill{font-family:var(--mono);font-size:11px;color:var(--white);background:rgba(255,255,255,.05);border:1px solid var(--border);padding:6px 14px}
+.big-quote{font-family:var(--serif);font-style:italic;font-size:clamp(1.8rem,3vw,2.8rem);color:var(--white);line-height:1.2;margin-bottom:2rem}
+.big-quote span{color:var(--accent)}
+.cat-label{font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;display:flex;align-items:center;gap:.75rem}
+.cat-label::after{content:'';flex:1;height:1px;background:var(--border);display:inline-block}
+
+/* VENTURES */
+#ventures{background:#0d0d0d}
+.ventures-layout{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border)}
+.vent-card{background:#0d0d0d;padding:2.5rem;position:relative;overflow:hidden;transition:background .2s;display:flex;flex-direction:column;gap:1.2rem}
+.vent-card:hover{background:#141414}
+.vent-card.featured{background:var(--accent);grid-row:span 2}
+.vent-card.featured:hover{background:#d4eb3a}
+.vent-card.featured .vent-name,.vent-card.featured .vent-desc,.vent-card.featured .vent-status,.vent-card.featured .vent-tag,.vent-card.featured .vent-link{color:var(--bg)}
+.vent-card.featured .vent-link{border-color:rgba(0,0,0,.3)}
+.vent-card.featured .vent-link:hover{background:rgba(0,0,0,.1)}
+.vent-card.featured .vent-tag{border-color:rgba(0,0,0,.25)}
+.vent-status{font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase}
+.vent-active{color:#5acd7a}.vent-built{color:var(--accent)}.vent-pause{color:var(--gray)}
+.vent-card.featured .vent-active,.vent-card.featured .vent-built{color:var(--bg)}
+.vent-name{font-family:var(--serif);font-size:1.3rem;font-weight:900;color:var(--white);line-height:1.15}
+.vent-desc{font-size:12px;color:var(--gray);line-height:1.65;flex:1}
+.vent-card.featured .vent-desc{color:rgba(0,0,0,.65)}
+.vent-tags{display:flex;flex-wrap:wrap;gap:.4rem}
+.vent-tag{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(232,255,71,.25);padding:2px 7px}
+.vent-link{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);text-decoration:none;border:1px solid rgba(232,255,71,.3);padding:7px 14px;align-self:flex-start;transition:background .2s}
+.vent-link:hover{background:rgba(232,255,71,.1)}
+.vent-big-letter{position:absolute;bottom:-1rem;right:1rem;font-family:var(--serif);font-size:7rem;font-weight:900;color:rgba(255,255,255,.04);line-height:1;pointer-events:none;user-select:none}
+
+/* EDUCATION */
+#education{background:var(--bg)}
+.edu-row{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
+.edu-card{background:var(--bg);padding:3rem;transition:background .2s}
+.edu-card:hover{background:#0d0d0d}
+.edu-school{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem}
+.edu-degree{font-family:var(--serif);font-size:1.6rem;font-weight:900;color:var(--white);margin-bottom:.4rem;line-height:1.15}
+.edu-period{font-family:var(--mono);font-size:10px;color:var(--gray);letter-spacing:.1em}
+
+/* HOBBIES */
+#hobbies{background:#0d0d0d;padding-bottom:6rem}
+.hobby-flex{display:flex;flex-wrap:wrap;gap:1px;background:var(--border)}
+.hobby-box{background:#0d0d0d;padding:2.5rem 2rem;flex:1;min-width:160px;transition:background .2s;position:relative;overflow:hidden}
+.hobby-box:hover{background:#141414}
+.hobby-icon-big{font-size:2rem;margin-bottom:1.2rem;display:block}
+.hobby-title{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--white);margin-bottom:.5rem}
+.hobby-note{font-size:12px;color:var(--gray);line-height:1.5;position:relative;z-index:1}
+.hobby-bg-letter{position:absolute;bottom:-.5rem;right:.5rem;font-family:var(--serif);font-size:5rem;font-weight:900;color:rgba(255,255,255,.03);pointer-events:none;user-select:none}
+
+/* CONTACT */
+#contact{min-height:80vh;display:flex;align-items:center;background:var(--bg);border-top:1px solid var(--border)}
+.contact-inner{display:grid;grid-template-columns:1.2fr 1fr;gap:8rem;width:100%;align-items:center}
+.contact-headline{font-family:var(--serif);font-weight:900;font-size:clamp(3rem,6vw,6rem);line-height:.95;letter-spacing:-.02em;color:var(--white)}
+.contact-headline em{font-style:italic;color:var(--accent)}
+.contact-links{display:flex;flex-direction:column}
+.contact-row{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 0;border-bottom:1px solid var(--border);text-decoration:none;color:var(--white);transition:padding-left .25s}
+.contact-row:hover{padding-left:1rem;color:var(--accent)}
+.contact-row:hover .c-arrow{transform:translate(4px,-4px)}
+.c-label{font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--gray);margin-bottom:4px}
+.c-value{font-size:14px}
+.c-arrow{font-size:1.3rem;color:var(--accent);transition:transform .2s}
+
+footer{padding:2rem 3rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--bg)}
+footer span{font-family:var(--mono);font-size:9px;color:var(--dim);letter-spacing:.12em;text-transform:uppercase}
+
+/* LANG TRANSITION */
+[data-es],[data-en]{transition:opacity .25s}
+
+@media(max-width:900px){
+  #hero{grid-template-columns:1fr}.hero-right{display:none}
+  .work-layout{grid-template-columns:1fr}
+  .proj-grid{grid-template-columns:1fr}.proj-card.wide{grid-column:span 1}
+  .skills-asymm{grid-template-columns:1fr}
+  .ventures-layout{grid-template-columns:1fr}.vent-card.featured{grid-row:auto}
+  .edu-row{grid-template-columns:1fr}
+  .contact-inner{grid-template-columns:1fr}
+  nav{padding:1rem 1.5rem}.nav-links{display:none}
+  section{padding:5rem 1.5rem}
+  footer{flex-direction:column;gap:1rem;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<nav>
+  <div class="nav-logo">GR — 2026</div>
+  <div class="nav-right">
+    <div class="nav-links">
+      <a href="#work" data-es="Work" data-en="Work">Work</a>
+      <a href="#projects" data-es="Proyectos" data-en="Projects">Proyectos</a>
+      <a href="#skills" data-es="Habilidades" data-en="Skills">Habilidades</a>
+      <a href="#ventures" data-es="Emprendimientos" data-en="Ventures">Emprendimientos</a>
+      <a href="#contact" data-es="Contacto" data-en="Contact">Contacto</a>
+    </div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</nav>
+
+<section id="hero">
+  <div class="hero-bg-text">PM</div>
+  <div class="hero-left">
+    <div class="hero-badge" data-es="Innovación End-to-End" data-en="End-to-End Innovation">Innovación End-to-End</div>
+    <h1 class="hero-name">Geo<span class="accent-word">vanny</span><br><span class="outline">Romero</span></h1>
+  </div>
+  <div class="hero-right">
+    <div class="hero-right-content reveal-right">
+      <p class="hero-tagline" data-es="Senior Project Manager.<br>Software Engineer.<br><em>Constructor de cosas.</em>" data-en="Senior Project Manager.<br>Software Engineer.<br><em>Builder of things.</em>">Senior Project Manager.<br>Software Engineer.<br><em>Constructor de cosas.</em></p>
+      <p class="hero-bio" data-es="15+ años llevando iniciativas de software desde la idea hasta producción — en consultoría, fintech, aerolíneas y transformación digital." data-en="15+ years taking software initiatives from idea to production — across consulting, fintech, airlines, and digital transformation.">15+ años llevando iniciativas de software desde la idea hasta producción — en consultoría, fintech, aerolíneas y transformación digital.</p>
+      <div class="hero-stats-row">
+        <div><div class="h-stat-num">15+</div><div class="h-stat-label" data-es="Años" data-en="Years">Años</div></div>
+        <div><div class="h-stat-num">8+</div><div class="h-stat-label" data-es="Empresas" data-en="Companies">Empresas</div></div>
+        <div><div class="h-stat-num">21</div><div class="h-stat-label">Repos</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-scroll-hint">
+    <div class="hero-scroll-line"></div>
+    <span data-es="Scroll" data-en="Scroll">Scroll</span>
+  </div>
+</section>
+
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="ticker-item">Agile Delivery</span><span class="ticker-item">Scrum Master</span><span class="ticker-item" data-es="Reporte Ejecutivo" data-en="Executive Reporting">Reporte Ejecutivo</span><span class="ticker-item" data-es="Ingeniería de Software" data-en="Software Engineering">Ingeniería de Software</span><span class="ticker-item">Cloud AWS · Azure</span><span class="ticker-item" data-es="Liderazgo Cross-funcional" data-en="Cross-functional Leadership">Liderazgo Cross-funcional</span><span class="ticker-item">Big Data · IA</span><span class="ticker-item">Jira · Azure DevOps</span>
+    <span class="ticker-item">Agile Delivery</span><span class="ticker-item">Scrum Master</span><span class="ticker-item" data-es="Reporte Ejecutivo" data-en="Executive Reporting">Reporte Ejecutivo</span><span class="ticker-item" data-es="Ingeniería de Software" data-en="Software Engineering">Ingeniería de Software</span><span class="ticker-item">Cloud AWS · Azure</span><span class="ticker-item" data-es="Liderazgo Cross-funcional" data-en="Cross-functional Leadership">Liderazgo Cross-funcional</span><span class="ticker-item">Big Data · IA</span><span class="ticker-item">Jira · Azure DevOps</span>
+  </div>
+</div>
+
+<section id="work">
+  <div class="work-layout">
+    <div class="work-sidebar reveal-left">
+      <div class="s-label" data-es="01 — Experiencia" data-en="01 — Experience">01 — Experiencia</div>
+      <div class="work-sidebar-num">6</div>
+      <h2 class="s-heading" style="font-size:2.5rem;margin-bottom:1.5rem" data-es="Empresas.<br><span class='outline'>Impacto<br>real.</span>" data-en="Companies.<br><span class='outline'>Real<br>impact.</span>">Empresas.<br><span class="outline">Impacto<br>real.</span></h2>
+      <p data-es="Desde consultoría enterprise hasta startups fintech. Siempre con equipos distribuidos y objetivos concretos." data-en="From enterprise consulting to fintech startups. Always with distributed teams and concrete goals.">Desde consultoría enterprise hasta startups fintech. Siempre con equipos distribuidos y objetivos concretos.</p>
+    </div>
+    <div class="exp-list">
+      <div class="exp-item reveal">
+        <div>
+          <div class="exp-role" data-es="Project Manager" data-en="Project Manager">Project Manager</div>
+          <div class="exp-company">Novacomp</div>
+          <div class="exp-client" data-es="Cliente: Aeromexico" data-en="Client: Aeromexico">Cliente: Aeromexico</div>
+          <div class="exp-desc" data-es="Coordinación de delivery para iniciativas IA en operaciones aeronáuticas. Múltiples workstreams con visibilidad ejecutiva total." data-en="Delivery coordination for AI-driven operational initiatives in aviation. Multiple workstreams with full executive visibility.">Coordinación de delivery para iniciativas IA en operaciones aeronáuticas. Múltiples workstreams con visibilidad ejecutiva total.</div>
+          <div class="exp-tag-row"><span class="exp-tag">IA Ops</span><span class="exp-tag">Agile</span><span class="exp-tag">Stakeholders</span></div>
+        </div>
+        <div class="exp-period">Sep 2025<br>Mar 2026</div>
+      </div>
+      <div class="exp-item reveal" style="transition-delay:.1s">
+        <div>
+          <div class="exp-role">Agile Project Manager</div>
+          <div class="exp-company">MT3</div>
+          <div class="exp-client" data-es="Cliente: SVP Worldwide" data-en="Client: SVP Worldwide">Cliente: SVP Worldwide</div>
+          <div class="exp-desc" data-es="Rebranding digital entregado antes del plazo. Equipos distribuidos, release planning y reporte ejecutivo continuo." data-en="Digital rebranding delivered ahead of schedule. Distributed teams, release planning, and ongoing executive reporting.">Rebranding digital entregado antes del plazo. Equipos distribuidos, release planning y reporte ejecutivo continuo.</div>
+          <div class="exp-tag-row"><span class="exp-tag">Digital Transformation</span><span class="exp-tag">Release Planning</span></div>
+        </div>
+        <div class="exp-period">Ago 2024<br>Ago 2025</div>
+      </div>
+      <div class="exp-item reveal" style="transition-delay:.15s">
+        <div>
+          <div class="exp-role" data-es="Senior Scrum Master & Delivery Lead" data-en="Senior Scrum Master & Delivery Lead">Senior Scrum Master & Delivery Lead</div>
+          <div class="exp-company">Raven</div>
+          <div class="exp-client" data-es="Cliente: Invex" data-en="Client: Invex">Cliente: Invex</div>
+          <div class="exp-desc" data-es="−70% en defectos de producción. Optimización de backlog y reestructuración de sprints en banca digital." data-en="−70% in production defects. Backlog optimization and sprint restructuring in digital banking products.">−70% en defectos de producción. Optimización de backlog y reestructuración de sprints en banca digital.</div>
+          <div class="exp-tag-row"><span class="exp-tag">−70% Defectos</span><span class="exp-tag">Banca Digital</span><span class="exp-tag">Scrum</span></div>
+        </div>
+        <div class="exp-period">Abr 2022<br>Ago 2024</div>
+      </div>
+      <div class="exp-item reveal" style="transition-delay:.2s">
+        <div>
+          <div class="exp-role" data-es="BA & Agile Delivery Manager" data-en="BA & Agile Delivery Manager">BA & Agile Delivery Manager</div>
+          <div class="exp-company">Tata Consultancy Services</div>
+          <div class="exp-client" data-es="Clientes: Citi · Dow Jones" data-en="Clients: Citi · Dow Jones">Clientes: Citi · Dow Jones</div>
+          <div class="exp-desc" data-es="Dashboards Jira y KPIs para gobernanza ejecutiva en consultoría enterprise global." data-en="Jira dashboards and KPIs for executive governance in global enterprise consulting environments.">Dashboards Jira y KPIs para gobernanza ejecutiva en consultoría enterprise global.</div>
+          <div class="exp-tag-row"><span class="exp-tag">BA</span><span class="exp-tag">KPIs</span><span class="exp-tag">Governance</span></div>
+        </div>
+        <div class="exp-period">May 2021<br>Abr 2022</div>
+      </div>
+      <div class="exp-item reveal" style="transition-delay:.25s">
+        <div>
+          <div class="exp-role">Technical Delivery Consultant</div>
+          <div class="exp-company">Globant</div>
+          <div class="exp-client" data-es="Cliente: LATAM Airlines" data-en="Client: LATAM Airlines">Cliente: LATAM Airlines</div>
+          <div class="exp-desc" data-es="Software delivery para productos cloud en múltiples zonas horarias. Ceremonias ágiles y estabilidad operacional." data-en="Software delivery for cloud products across multiple time zones. Agile ceremonies and operational stability.">Software delivery para productos cloud en múltiples zonas horarias. Ceremonias ágiles y estabilidad operacional.</div>
+          <div class="exp-tag-row"><span class="exp-tag">Cloud</span><span class="exp-tag">Aviación</span><span class="exp-tag">DevOps</span></div>
+        </div>
+        <div class="exp-period">Dic 2019<br>May 2021</div>
+      </div>
+      <div class="exp-item reveal" style="transition-delay:.3s">
+        <div>
+          <div class="exp-role" data-es="Software Engineer & Tech Lead" data-en="Software Engineer & Tech Lead">Software Engineer & Tech Lead</div>
+          <div class="exp-company">Vector · INE · Telmex · Cellfusion · Flexway</div>
+          <div class="exp-client" data-es="10 años en la trinchera técnica" data-en="10 years in the technical trenches">10 años en la trinchera técnica</div>
+          <div class="exp-desc" data-es="SDLC completo: análisis, desarrollo, testing, deployment. Base técnica sólida que informa cada decisión de delivery hoy." data-en="Full SDLC coverage: analysis, development, testing, deployment. A solid technical foundation that informs every delivery decision today.">SDLC completo: análisis, desarrollo, testing, deployment. Base técnica sólida que informa cada decisión de delivery hoy.</div>
+          <div class="exp-tag-row"><span class="exp-tag">Software Engineering</span><span class="exp-tag">Tech Lead</span><span class="exp-tag">SDLC</span></div>
+        </div>
+        <div class="exp-period">Dic 2009<br>Dic 2019</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="s-label reveal" data-es="02 — Proyectos" data-en="02 — Projects">02 — Proyectos</div>
+  <h2 class="s-heading reveal" data-es="Trabajo<br><span class='outline'>real.</span>" data-en="Real<br><span class='outline'>work.</span>">Trabajo<br><span class="outline">real.</span></h2>
+  <div class="proj-grid">
+    <div class="proj-card accent-card reveal">
+      <div class="proj-num">01</div>
+      <div class="proj-name" data-es="IA Operacional — Aeromexico" data-en="Operational AI — Aeromexico">IA Operacional — Aeromexico</div>
+      <p class="proj-desc" data-es="Coordinación de delivery para proyectos de inteligencia artificial aplicada a operaciones aeronáuticas. Alta presión, múltiples workstreams." data-en="Delivery coordination for artificial intelligence projects applied to aviation operations. High-pressure, multiple concurrent workstreams.">Coordinación de delivery para proyectos de inteligencia artificial aplicada a operaciones aeronáuticas. Alta presión, múltiples workstreams.</p>
+      <div class="proj-type" data-es="IA · Aerolíneas" data-en="AI · Airlines">IA · Aerolíneas</div>
+    </div>
+    <div class="proj-card reveal" style="transition-delay:.1s">
+      <div class="proj-num">02</div>
+      <div class="proj-name" data-es="Rebranding Digital — SVP Worldwide" data-en="Digital Rebranding — SVP Worldwide">Rebranding Digital — SVP Worldwide</div>
+      <p class="proj-desc" data-es="Iniciativa estratégica de rebranding global entregada ahead of schedule. Jira, release planning, stakeholders de múltiples países." data-en="Strategic global rebranding initiative delivered ahead of schedule. Jira, release planning, stakeholders across multiple countries.">Iniciativa estratégica de rebranding global entregada ahead of schedule. Jira, release planning, stakeholders de múltiples países.</p>
+      <div class="proj-type">Digital Transformation</div>
+    </div>
+    <div class="proj-card wide reveal" style="transition-delay:.15s">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:end">
+        <div>
+          <div class="proj-num">03</div>
+          <div class="proj-name" data-es="Banca Digital — Invex" data-en="Digital Banking — Invex">Banca Digital — Invex</div>
+          <p class="proj-desc" data-es="La métrica habla por sí sola: −70% en defectos de producción mediante backlog optimization y sprint restructuring." data-en="The metric speaks for itself: −70% in production defects through backlog optimization and sprint restructuring.">La métrica habla por sí sola: −70% en defectos de producción mediante backlog optimization y sprint restructuring.</p>
+        </div>
+        <div>
+          <div style="font-family:var(--serif);font-size:6rem;font-weight:900;color:var(--accent);line-height:1;text-align:right">−70%</div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--gray);text-align:right;letter-spacing:.1em;text-transform:uppercase" data-es="Defectos en producción" data-en="Production defects">Defectos en producción</div>
+        </div>
+      </div>
+    </div>
+    <div class="proj-card reveal" style="transition-delay:.2s">
+      <div class="proj-num">04</div>
+      <div class="proj-name" data-es="Governance Dashboard — Citi & Dow Jones" data-en="Governance Dashboard — Citi & Dow Jones">Governance Dashboard — Citi & Dow Jones</div>
+      <p class="proj-desc" data-es="KPIs y dashboards Jira para visibilidad ejecutiva en consultoría global." data-en="KPIs and Jira dashboards for executive visibility in global consulting.">KPIs y dashboards Jira para visibilidad ejecutiva en consultoría global.</p>
+      <div class="proj-type">Enterprise · BI</div>
+    </div>
+    <div class="proj-card reveal" style="transition-delay:.25s">
+      <div class="proj-num">05</div>
+      <div class="proj-name" data-es="Cloud Delivery — LATAM Airlines" data-en="Cloud Delivery — LATAM Airlines">Cloud Delivery — LATAM Airlines</div>
+      <p class="proj-desc" data-es="Productos digitales para pasajeros en múltiples zonas horarias con estabilidad operacional." data-en="Digital products for passengers across multiple time zones with operational stability.">Productos digitales para pasajeros en múltiples zonas horarias con estabilidad operacional.</p>
+      <div class="proj-type">Cloud · Aviation</div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="skills-asymm">
+    <div>
+      <div class="s-label reveal" data-es="03 — Habilidades" data-en="03 — Skills">03 — Habilidades</div>
+      <h2 class="s-heading reveal" data-es="El<br><span class='outline'>arsenal.</span>" data-en="The<br><span class='outline'>arsenal.</span>">El<br><span class="outline">arsenal.</span></h2>
+      <div class="big-quote reveal" data-es='"La mejor entrega<br>nace de quien<br><span>entiende el código</span><br>y la estrategia."' data-en='"The best delivery<br>comes from someone who<br><span>understands the code</span><br>and the strategy."'>"La mejor entrega<br>nace de quien<br><span>entiende el código</span><br>y la estrategia."</div>
+      <p style="font-size:13px;color:var(--gray);line-height:1.7" class="reveal" data-es="Comencé como software engineer. Eso nunca se va. Cada decisión de delivery viene respaldada por 10 años en la trinchera técnica." data-en="I started as a software engineer. That never leaves. Every delivery decision is backed by 10 years in the technical trenches.">Comencé como software engineer. Eso nunca se va. Cada decisión de delivery viene respaldada por 10 años en la trinchera técnica.</p>
+      <div class="tools-wrap reveal"><span class="tool-pill">Jira</span><span class="tool-pill">Confluence</span><span class="tool-pill">Azure DevOps</span><span class="tool-pill">Power BI</span><span class="tool-pill">SQL</span><span class="tool-pill">Git</span><span class="tool-pill">Notion</span><span class="tool-pill">Excel</span><span class="tool-pill">AI Tools</span></div>
+    </div>
+    <div>
+      <div class="cat-label reveal" data-es="Gestión & Delivery" data-en="Management & Delivery">Gestión & Delivery</div>
+      <div class="skill-bar-row reveal"><span class="skill-name-text">Agile / Scrum</span><div class="skill-track"><div class="skill-fill" data-w="97"></div></div><span class="skill-pct">97%</span></div>
+      <div class="skill-bar-row reveal"><span class="skill-name-text" data-es="Sprint & Backlog" data-en="Sprint & Backlog">Sprint & Backlog</span><div class="skill-track"><div class="skill-fill" data-w="95"></div></div><span class="skill-pct">95%</span></div>
+      <div class="skill-bar-row reveal"><span class="skill-name-text" data-es="Reporte Ejecutivo" data-en="Executive Reporting">Reporte Ejecutivo</span><div class="skill-track"><div class="skill-fill" data-w="93"></div></div><span class="skill-pct">93%</span></div>
+      <div class="skill-bar-row reveal"><span class="skill-name-text" data-es="Gestión de Riesgos" data-en="Risk Management">Gestión de Riesgos</span><div class="skill-track"><div class="skill-fill" data-w="90"></div></div><span class="skill-pct">90%</span></div>
+      <div class="cat-label reveal" style="margin-top:2rem" data-es="Técnico" data-en="Technical">Técnico</div>
+      <div class="skill-bar-row reveal"><span class="skill-name-text">Jira / Confluence</span><div class="skill-track"><div class="skill-fill" data-w="95"></div></div><span class="skill-pct">95%</span></div>
+      <div class="skill-bar-row reveal"><span class="skill-name-text">Azure DevOps</span><div class="skill-track"><div class="skill-fill" data-w="88"></div></div><span class="skill-pct">88%</span></div>
+      <div class="skill-bar-row reveal"><span class="skill-name-text">Cloud AWS / Azure</span><div class="skill-track"><div class="skill-fill" data-w="80"></div></div><span class="skill-pct">80%</span></div>
+      <div class="skill-bar-row reveal"><span class="skill-name-text">SQL / Power BI</span><div class="skill-track"><div class="skill-fill" data-w="82"></div></div><span class="skill-pct">82%</span></div>
+      <div class="skill-bar-row reveal"><span class="skill-name-text" data-es="Ing. de Software" data-en="Software Eng.">Ing. de Software</span><div class="skill-track"><div class="skill-fill" data-w="85"></div></div><span class="skill-pct">85%</span></div>
+      <div class="cat-label reveal" style="margin-top:2rem" data-es="Idiomas" data-en="Languages">Idiomas</div>
+      <div class="skill-bar-row reveal"><span class="skill-name-text" data-es="Español" data-en="Spanish">Español</span><div class="skill-track"><div class="skill-fill" data-w="100"></div></div><span class="skill-pct" data-es="Nativo" data-en="Native">Nativo</span></div>
+      <div class="skill-bar-row reveal"><span class="skill-name-text" data-es="Inglés" data-en="English">Inglés</span><div class="skill-track"><div class="skill-fill" data-w="85"></div></div><span class="skill-pct" data-es="Avanzado" data-en="Advanced">Avanzado</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="ventures">
+  <div class="s-label reveal" data-es="04 — Emprendimientos" data-en="04 — Ventures">04 — Emprendimientos</div>
+  <h2 class="s-heading reveal" data-es="Lo que<br><span class='outline'>construyo.</span>" data-en="What I<br><span class='outline'>build.</span>">Lo que<br><span class="outline">construyo.</span></h2>
+  <div class="ventures-layout">
+    <div class="vent-card featured reveal">
+      <div class="vent-status vent-active" data-es="● Activo" data-en="● Active">● Activo</div>
+      <div class="vent-name">Aumentario</div>
+      <div class="vent-desc" data-es="Empresa de desarrollo de software, consultoría TI y soluciones a la medida. Desarrollo web, apps móviles, IA, Big Data y arquitectura de software." data-en="Software development company, IT consulting and custom solutions. Web development, mobile apps, AI, Big Data, and software architecture.">Empresa de desarrollo de software, consultoría TI y soluciones a la medida. Desarrollo web, apps móviles, IA, Big Data y arquitectura de software.</div>
+      <div class="vent-tags"><span class="vent-tag" data-es="Desarrollo Web" data-en="Web Dev">Desarrollo Web</span><span class="vent-tag">IA</span><span class="vent-tag">Big Data</span></div>
+      <a href="https://aumentario.com" class="vent-link" target="_blank" data-es="Ver sitio ↗" data-en="Visit site ↗">Ver sitio ↗</a>
+      <div class="vent-big-letter" style="color:rgba(0,0,0,.08)">A</div>
+    </div>
+    <div class="vent-card reveal" style="transition-delay:.1s">
+      <div class="vent-status vent-built" data-es="◈ Publicado" data-en="◈ Published">◈ Publicado</div>
+      <div class="vent-name" data-es="Mini Herramientas" data-en="Mini Tools">Mini Herramientas</div>
+      <div class="vent-desc" data-es="Catálogo de utilidades web propias: texto a voz, minutas con IA, analizador de emails, generador de imágenes, SOW builder y más." data-en="Personal web utilities catalog: text to speech, AI meeting notes, email analyzer, image generator, SOW builder and more.">Catálogo de utilidades web propias: texto a voz, minutas con IA, analizador de emails, generador de imágenes, SOW builder y más.</div>
+      <div class="vent-tags"><span class="vent-tag">Web Tools</span><span class="vent-tag">IA</span><span class="vent-tag">Open Source</span></div>
+      <a href="https://giohub.github.io/publicProjects/WebResources/" class="vent-link" target="_blank" data-es="Ver catálogo ↗" data-en="See catalog ↗">Ver catálogo ↗</a>
+      <div class="vent-big-letter">T</div>
+    </div>
+    <div class="vent-card reveal" style="transition-delay:.15s">
+      <div class="vent-status vent-built" data-es="◈ Publicado" data-en="◈ Published">◈ Publicado</div>
+      <div class="vent-name">GioHub</div>
+      <div class="vent-desc" data-es="21 repositorios activos en GitHub con recursos, plantillas, utilidades y proyectos personales." data-en="21 active GitHub repositories with resources, templates, utilities, and personal projects.">21 repositorios activos en GitHub con recursos, plantillas, utilidades y proyectos personales.</div>
+      <div class="vent-tags"><span class="vent-tag">GitHub</span><span class="vent-tag">21 Repos</span></div>
+      <a href="https://github.com/GioHub" class="vent-link" target="_blank" data-es="Ver GitHub ↗" data-en="See GitHub ↗">Ver GitHub ↗</a>
+      <div class="vent-big-letter">G</div>
+    </div>
+    <div class="vent-card reveal" style="transition-delay:.2s">
+      <div class="vent-status vent-pause" data-es="◌ En pausa" data-en="◌ On hold">◌ En pausa</div>
+      <div class="vent-name">Aumentoring</div>
+      <div class="vent-desc" data-es="Mentoría, coaching y capacitación en liderazgo, soft skills y equipos de alto desempeño." data-en="Mentorship, coaching, and training in leadership, soft skills, and high-performance teams.">Mentoría, coaching y capacitación en liderazgo, soft skills y equipos de alto desempeño.</div>
+      <div class="vent-tags"><span class="vent-tag">Coaching</span><span class="vent-tag" data-es="Liderazgo" data-en="Leadership">Liderazgo</span></div>
+      <a href="https://aumentoring.com" class="vent-link" target="_blank" data-es="Ver sitio ↗" data-en="Visit site ↗">Ver sitio ↗</a>
+      <div class="vent-big-letter">M</div>
+    </div>
+    <div class="vent-card reveal" style="transition-delay:.25s">
+      <div class="vent-status vent-pause" data-es="◌ En pausa" data-en="◌ On hold">◌ En pausa</div>
+      <div class="vent-name">Gruait</div>
+      <div class="vent-desc" data-es="Redacción de contenido para blogs, redes sociales y sitios web. Con cotizador y categorías temáticas." data-en="Content writing for blogs, social media, and websites. With a pricing tool and topic categories.">Redacción de contenido para blogs, redes sociales y sitios web. Con cotizador y categorías temáticas.</div>
+      <div class="vent-tags"><span class="vent-tag">Content</span><span class="vent-tag">SEO</span></div>
+      <a href="https://aumentario.com/gruait/" class="vent-link" target="_blank" data-es="Ver sitio ↗" data-en="Visit site ↗">Ver sitio ↗</a>
+      <div class="vent-big-letter">C</div>
+    </div>
+  </div>
+</section>
+
+<section id="education">
+  <div class="s-label reveal" data-es="05 — Educación" data-en="05 — Education">05 — Educación</div>
+  <h2 class="s-heading reveal" data-es="Forma<br><span class='outline'>ción.</span>" data-en="Educa<br><span class='outline'>tion.</span>">Forma<br><span class="outline">ción.</span></h2>
+  <div class="edu-row">
+    <div class="edu-card reveal">
+      <div class="edu-school">UNIR</div>
+      <div class="edu-degree" data-es="Maestría en Big Data" data-en="Master's in Big Data">Maestría en Big Data</div>
+      <div class="edu-period">Nov 2019 — Nov 2021</div>
+    </div>
+    <div class="edu-card reveal" style="transition-delay:.1s">
+      <div class="edu-school">ITESM — Tec de Monterrey</div>
+      <div class="edu-degree" data-es="Ing. en Ciencias Computacionales" data-en="B.S. in Computer Science">Ing. en Ciencias Computacionales</div>
+      <div class="edu-period">Ago 2006 — Dic 2011</div>
+    </div>
+  </div>
+</section>
+
+<section id="hobbies">
+  <div class="s-label reveal" data-es="06 — Fuera del trabajo" data-en="06 — Beyond work">06 — Fuera del trabajo</div>
+  <h2 class="s-heading reveal" data-es="Lo que<br><span class='outline'>me mueve.</span>" data-en="What<br><span class='outline'>drives me.</span>">Lo que<br><span class="outline">me mueve.</span></h2>
+  <div class="hobby-flex">
+    <div class="hobby-box reveal"><span class="hobby-icon-big">📖</span><div class="hobby-title" data-es="Lectura" data-en="Reading">Lectura</div><p class="hobby-note" data-es="Técnica, estrategia, negocio. Siempre leyendo algo." data-en="Technical, strategy, business. Always reading something.">Técnica, estrategia, negocio. Siempre leyendo algo.</p><div class="hobby-bg-letter">L</div></div>
+    <div class="hobby-box reveal" style="transition-delay:.08s"><span class="hobby-icon-big">🔬</span><div class="hobby-title" data-es="Tech Explorer" data-en="Tech Explorer">Tech Explorer</div><p class="hobby-note" data-es="Nuevas herramientas, frameworks, tendencias en IA." data-en="New tools, frameworks, AI trends.">Nuevas herramientas, frameworks, tendencias en IA.</p><div class="hobby-bg-letter">T</div></div>
+    <div class="hobby-box reveal" style="transition-delay:.12s"><span class="hobby-icon-big">⚽</span><div class="hobby-title" data-es="Fútbol Soccer" data-en="Soccer">Fútbol Soccer</div><p class="hobby-note" data-es="El deporte del trabajo en equipo por excelencia." data-en="The ultimate team sport. Team dynamics on and off the pitch.">El deporte del trabajo en equipo por excelencia.</p><div class="hobby-bg-letter">F</div></div>
+    <div class="hobby-box reveal" style="transition-delay:.16s"><span class="hobby-icon-big">🎮</span><div class="hobby-title" data-es="Videojuegos" data-en="Gaming">Videojuegos</div><p class="hobby-note" data-es="Lógica, estrategia y narrativa como ejercicio mental." data-en="Logic, strategy, and narrative as mental exercise.">Lógica, estrategia y narrativa como ejercicio mental.</p><div class="hobby-bg-letter">V</div></div>
+    <div class="hobby-box reveal" style="transition-delay:.2s"><span class="hobby-icon-big">🚶</span><div class="hobby-title" data-es="Caminatas" data-en="Walking">Caminatas</div><p class="hobby-note" data-es="CDMX a pie. Desconectar para pensar mejor." data-en="Mexico City on foot. Disconnect to think more clearly.">CDMX a pie. Desconectar para pensar mejor.</p><div class="hobby-bg-letter">C</div></div>
+    <div class="hobby-box reveal" style="transition-delay:.24s"><span class="hobby-icon-big">🍽️</span><div class="hobby-title" data-es="Gastronomía" data-en="Food">Gastronomía</div><p class="hobby-note" data-es="Buena comida como experiencia cultural y social." data-en="Good food as a cultural and social experience.">Buena comida como experiencia cultural y social.</p><div class="hobby-bg-letter">G</div></div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="contact-inner">
+    <div class="reveal-left">
+      <h2 class="contact-headline" data-es="¿Construimos<br>algo <em>juntos?</em>" data-en="Let's build<br>something <em>together.</em>">¿Construimos<br>algo <em>juntos?</em></h2>
+    </div>
+    <div class="contact-links reveal-right">
+      <a href="mailto:geovannyre@gmail.com" class="contact-row"><div><div class="c-label">Email</div><div class="c-value">geovannyre@gmail.com</div></div><span class="c-arrow">↗</span></a>
+      <a href="https://linkedin.com/in/geovannyromeroespinosa" class="contact-row"><div><div class="c-label">LinkedIn</div><div class="c-value">/in/geovannyromeroespinosa</div></div><span class="c-arrow">↗</span></a>
+      <a href="https://giohub.github.io" class="contact-row"><div><div class="c-label">Portfolio</div><div class="c-value">giohub.github.io</div></div><span class="c-arrow">↗</span></a>
+      <a href="https://aumentario.com" class="contact-row"><div><div class="c-label" data-es="Empresa" data-en="Company">Empresa</div><div class="c-value">aumentario.com</div></div><span class="c-arrow">↗</span></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 Geovanny Romero</span>
+  <span data-es="Senior PM · Agile Delivery · CDMX" data-en="Senior PM · Agile Delivery · Mexico City">Senior PM · Agile Delivery · CDMX</span>
+  <span data-es="Hecho con intención" data-en="Made with intention">Hecho con intención</span>
+</footer>
+
+<script>
+let lang = 'es';
+
+function setLang(l) {
+  lang = l;
+  document.getElementById('btn-es').classList.toggle('active', l === 'es');
+  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+
+  document.querySelectorAll('[data-es][data-en]').forEach(el => {
+    const val = el.getAttribute('data-' + l);
+    if (!val) return;
+    if (el.tagName === 'A' && el.getAttribute('href')) {
+      el.textContent = val;
+    } else {
+      el.innerHTML = val;
+    }
+  });
+
+  document.documentElement.lang = l;
+}
+
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=(mx-6)+'px';cursor.style.top=(my-6)+'px';});
+function animRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=(rx-20)+'px';ring.style.top=(ry-20)+'px';requestAnimationFrame(animRing);}
+animRing();
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cursor.style.transform='scale(3)';ring.style.opacity='0';});
+  el.addEventListener('mouseleave',()=>{cursor.style.transform='scale(1)';ring.style.opacity='1';});
+});
+
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      e.target.querySelectorAll('.skill-fill[data-w]').forEach(f=>{f.style.width=f.dataset.w+'%';});
+      if(e.target.classList.contains('skill-bar-row')){
+        const f=e.target.querySelector('.skill-fill[data-w]');
+        if(f) f.style.width=f.dataset.w+'%';
+      }
+    }
+  });
+},{threshold:.15});
+
+document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.skill-bar-row').forEach(el=>io.observe(el));
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t) t.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+</script>
+</body>
+</html>
