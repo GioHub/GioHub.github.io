@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador — Recurso compartido</title>
+<style>
+  :root{
+    --coral:#FF6B4A; --teal:#2EC4B6; --amber:#E8A33D; --red:#E24C4C; --green:#1F9D6B;
+    --white:#FFFFFF; --navy:#1B2A4A; --gray:#5B6B84;
+  }
+  body[data-theme="dark"]{
+    --page-bg:#1B2A4A; --page-bg-2:#15223C; --panel-bg:#121D33; --input-bg:#0F1830;
+    --text-strong:#FFFFFF; --text-muted:#8493AA; --track-bg:#2C3D5E; --dashed:#3A4A6B; --input-border:#3A4A6B;
+  }
+  body[data-theme="light"]{
+    --page-bg:#EEF2F8; --page-bg-2:#E4EAF3; --panel-bg:#FFFFFF; --input-bg:#FFFFFF;
+    --text-strong:#1B2A4A; --text-muted:#5B6B84; --track-bg:#D8E0EC; --dashed:#C3CEE0; --input-border:#C3CEE0;
+  }
+  body[data-theme="light"] .cell-card{ box-shadow:0 1px 3px rgba(27,42,74,.08); }
+  body[data-theme="light"] .capacity-wrap, body[data-theme="light"] .options{ border:1px solid #E1E7F0; }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:Calibri,Arial,sans-serif; background:var(--page-bg); color:var(--text-strong);
+    min-height:100vh; padding:20px 36px 48px; transition:background .25s ease, color .25s ease;
+  }
+  h1,h2,h3{font-family:Cambria,Georgia,serif; margin:0;}
+  .tag{ font-size:12px; font-weight:bold; letter-spacing:2px; color:var(--coral); text-transform:uppercase; }
+
+  .topbar{ display:flex; justify-content:flex-end; gap:10px; margin-bottom:8px; }
+  .chip-btn{
+    background:var(--panel-bg); border:1px solid var(--dashed); color:var(--text-strong);
+    padding:7px 14px; border-radius:20px; font-size:12px; font-weight:bold; cursor:pointer;
+  }
+  .chip-btn:hover{ border-color:var(--coral); color:var(--coral); }
+
+  header{ margin-bottom:22px; }
+  header h1{ font-size:29px; margin-top:6px; }
+  header p{ color:var(--text-muted); font-size:14px; margin-top:8px; max-width:920px; line-height:1.45;}
+
+  .editable{ border-bottom:1px dashed transparent; cursor:text; outline:none; border-radius:3px; }
+  .editable:hover{ border-bottom-color:var(--text-muted); }
+  .editable:focus{ border-bottom-color:var(--coral); background:rgba(255,107,74,.06); }
+  input.editable-num{
+    border:1px solid #D7DEE9; border-radius:6px; padding:2px 6px; font-family:Calibri,sans-serif;
+    font-weight:bold; text-align:center;
+  }
+
+  .resource-wrap{ display:flex; align-items:center; gap:16px; background:var(--panel-bg); border-radius:14px; padding:16px 22px; margin-bottom:18px; }
+  .resource-avatar{ width:52px; height:52px; border-radius:50%; background:var(--coral); color:#FFFFFF; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:17px; font-family:Cambria,serif; flex:none; letter-spacing:.5px; }
+  .resource-info{ min-width:0; }
+  .resource-name{ font-size:18px; font-weight:bold; font-family:Cambria,serif; }
+  .resource-role{ font-size:12.5px; color:var(--text-muted); margin-top:2px; }
+
+  .stats-wrap{ display:flex; gap:18px; flex-wrap:wrap; margin-bottom:22px; }
+  .stat-box{ background:var(--panel-bg); border-radius:14px; padding:18px 24px; flex:1; min-width:260px; }
+  .stat-label{font-size:12px; color:var(--text-muted); letter-spacing:1px; text-transform:uppercase; font-weight:bold; margin-bottom:6px;}
+  .stat-value{font-size:28px; font-weight:bold; font-family:Cambria,serif; display:flex; align-items:baseline; gap:6px;}
+  .stat-value span{font-size:14.5px; color:var(--text-muted); font-family:Calibri,sans-serif; font-weight:normal;}
+  .stat-value input{
+    width:60px; font-size:26px; background:transparent; border:none; border-bottom:2px dashed var(--dashed);
+    color:var(--text-strong); font-family:Cambria,serif; font-weight:bold;
+  }
+  .stat-value input:focus{ outline:none; border-bottom-color:var(--coral); }
+  .cap-bar-track{ margin-top:10px; height:12px; background:var(--track-bg); border-radius:6px; overflow:hidden; display:flex; }
+  .cap-seg{ height:100%; transition:width .35s ease; }
+
+  .grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:22px; }
+  .cell-card{ background:var(--white); color:var(--navy); border-radius:14px; padding:20px 22px; position:relative; border-top:6px solid var(--navy); }
+  .cell-remove{
+    position:absolute; top:12px; right:12px; width:24px; height:24px; border-radius:50%; border:none;
+    background:#EFF3F8; color:var(--gray); font-size:14px; cursor:pointer; line-height:1;
+  }
+  .cell-remove:hover{ background:#FBDAD1; color:var(--coral); }
+  .cell-head{ margin-bottom:8px; padding-right:26px; }
+  .cell-head h2{ font-size:18px; }
+  .story{ font-size:13px; color:var(--gray); margin-bottom:14px; line-height:1.45; min-height:20px;}
+
+  .need-row{ display:flex; align-items:center; gap:8px; margin-bottom:14px; font-size:12.5px; color:var(--gray); font-weight:bold; flex-wrap:wrap; }
+  .need-row input{ width:46px; font-size:14px; }
+  .need-note{ font-size:10.5px; color:#8493AA; font-weight:normal; font-style:italic; }
+
+  .allocator{ display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+  .btn{
+    width:36px; height:36px; border-radius:10px; border:none; cursor:pointer;
+    font-size:19px; font-weight:bold; color:var(--white); display:flex; align-items:center; justify-content:center;
+  }
+  .btn:disabled{ background:#C9D2E0 !important; cursor:not-allowed; }
+  .alloc-value{ font-size:21px; font-weight:bold; min-width:96px; text-align:center; }
+  .alloc-value span{ font-size:11.5px; color:var(--gray); display:block; font-weight:normal; }
+
+  .cover-bar-track{ height:10px; background:#EFF3F8; border-radius:5px; overflow:hidden; margin-bottom:10px;}
+  .cover-bar{ height:100%; border-radius:5px; transition:width .35s ease, background .35s ease; }
+
+  .risk-row{ display:flex; align-items:center; justify-content:space-between; }
+  .risk-label{ font-size:11px; font-weight:bold; letter-spacing:.5px; text-transform:uppercase; color:var(--gray);}
+  .risk-pill{ font-size:12px; font-weight:bold; padding:5px 12px; border-radius:20px; color:var(--white); }
+
+  .impact{ margin-top:12px; padding-top:10px; border-top:1px solid #E1E7F0; font-size:11.5px; color:var(--gray); line-height:1.5;}
+
+  .add-card{
+    border:2px dashed var(--dashed); border-radius:14px; display:flex; align-items:center; justify-content:center;
+    min-height:180px; background:transparent;
+  }
+  .add-card button{
+    background:none; border:none; color:var(--text-muted); font-size:14px; font-weight:bold; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+  }
+  .add-card button:hover{ color:var(--text-strong); }
+  .add-card .plus{ font-size:30px; width:52px; height:52px; border-radius:50%; border:2px dashed var(--dashed); display:flex; align-items:center; justify-content:center; }
+
+  .options{ margin-top:22px; background:var(--panel-bg); border-radius:14px; padding:20px 26px; }
+  .options h3{ font-size:14px; color:var(--text-strong); margin-bottom:4px; letter-spacing:.5px; }
+  .options .sub{ font-size:11.5px; color:var(--text-muted); margin-bottom:14px; }
+  .opt{
+    display:flex; align-items:flex-start; gap:12px; padding:10px 0; border-bottom:1px solid var(--track-bg);
+  }
+  .opt-main{ display:flex; align-items:flex-start; gap:12px; flex:1; cursor:pointer; }
+  .opt-check{
+    width:22px; height:22px; border-radius:6px; border:2px solid var(--dashed); flex:none; margin-top:2px;
+    display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:bold; transition:.2s;
+    color:transparent;
+  }
+  .opt.on .opt-check{ background:var(--teal); border-color:var(--teal); color:var(--white); }
+  .opt-text b{ display:block; font-size:13.5px; color:var(--text-strong); margin-bottom:2px;}
+  .opt-text span{ font-size:11.5px; color:var(--text-muted); }
+  .opt-del{ background:none; border:none; color:var(--dashed); font-size:16px; cursor:pointer; padding:0 4px; }
+  .opt-del:hover{ color:var(--coral); }
+
+  .add-opt-row{ padding-top:14px; }
+  .add-opt-btn{
+    background:none; border:1px dashed var(--dashed); color:var(--text-muted); padding:9px 16px; border-radius:8px;
+    font-size:12.5px; cursor:pointer; width:100%; text-align:left;
+  }
+  .add-opt-btn:hover{ border-color:var(--coral); color:var(--text-strong); }
+  .opt-form{ background:var(--input-bg); border:1px solid var(--input-border); border-radius:10px; padding:16px 18px; margin-top:10px; display:grid; gap:10px; }
+  .opt-form input, .opt-form select, .opt-form textarea{
+    width:100%; padding:8px 10px; border-radius:7px; border:1px solid var(--input-border); background:var(--page-bg-2); color:var(--text-strong);
+    font-family:Calibri,sans-serif; font-size:12.5px;
+  }
+  .opt-form label{ font-size:10.5px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.5px; font-weight:bold; display:block; margin-bottom:4px;}
+  .opt-form-row{ display:grid; grid-template-columns:2fr 1fr; gap:10px; }
+  .opt-form-actions{ display:flex; gap:10px; margin-top:2px; }
+  .opt-form-actions button{ padding:8px 16px; border-radius:7px; border:none; font-size:12.5px; font-weight:bold; cursor:pointer; }
+  .btn-save{ background:var(--coral); color:var(--white); }
+  .btn-cancel{ background:none; color:var(--text-muted); border:1px solid var(--input-border) !important; }
+
+  .agreement{
+    margin-top:22px; background:#EFF3F8; color:var(--navy); border-radius:14px; padding:22px 26px;
+  }
+  .agreement h3{ font-size:14px; color:var(--gray); letter-spacing:1px; text-transform:uppercase; margin-bottom:10px;}
+  #agreementText{ font-size:14.5px; line-height:1.6; }
+  #agreementText b{ color:var(--coral); }
+
+  .toolbar{ display:flex; gap:12px; margin-top:18px; flex-wrap:wrap; align-items:center; }
+  .reset{
+    background:none; border:1px solid var(--dashed); color:var(--text-muted); padding:9px 18px;
+    border-radius:8px; font-size:12.5px; cursor:pointer;
+  }
+  .reset:hover{ border-color:var(--coral); color:var(--coral); }
+  .minuta-btn{
+    background:var(--coral); border:none; color:var(--white); padding:9px 18px;
+    border-radius:8px; font-size:12.5px; font-weight:bold; cursor:pointer;
+  }
+  .minuta-btn:hover{ background:#FF8264; }
+  .copied-flag{ font-size:12px; color:var(--teal); font-weight:bold; opacity:0; transition:opacity .2s ease; }
+  .copied-flag.show{ opacity:1; }
+
+  .modal-overlay{
+    display:none; position:fixed; inset:0; background:rgba(10,15,30,.65); z-index:1000;
+    align-items:center; justify-content:center; padding:30px;
+  }
+  .modal-overlay.show{ display:flex; }
+  .modal-box{
+    background:var(--panel-bg); color:var(--text-strong); border-radius:14px; padding:26px 28px;
+    max-width:680px; width:100%; max-height:85vh; display:flex; flex-direction:column; gap:14px;
+  }
+  .modal-head{ display:flex; align-items:center; justify-content:space-between; }
+  .modal-head h3{ font-size:18px; font-family:Cambria,serif; }
+  .modal-close{ background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer; line-height:1; }
+  .modal-close:hover{ color:var(--coral); }
+  #minutaText{
+    width:100%; flex:1; min-height:340px; resize:vertical; background:var(--input-bg); color:var(--text-strong);
+    border:1px solid var(--input-border); border-radius:10px; padding:16px; font-family:'Courier New',monospace;
+    font-size:12.5px; line-height:1.55; white-space:pre-wrap;
+  }
+  .modal-actions{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .modal-actions button{ padding:9px 18px; border-radius:8px; border:none; font-size:12.5px; font-weight:bold; cursor:pointer; }
+  .modal-actions .btn-primary{ background:var(--coral); color:var(--white); }
+  .modal-actions .btn-secondary{ background:none; border:1px solid var(--input-border) !important; color:var(--text-strong); }
+</style>
+</head>
+<body data-theme="dark">
+
+<div class="topbar">
+  <button class="chip-btn" id="langToggle" onclick="toggleLang()">EN</button>
+  <button class="chip-btn" id="themeToggle" onclick="toggleTheme()">☀</button>
+</div>
+
+<header>
+  <div class="tag" id="tTag"></div>
+  <h1 id="tTitle"></h1>
+  <p id="tIntro"></p>
+</header>
+
+<div class="resource-wrap">
+  <div class="resource-avatar" id="resourceAvatar">JA</div>
+  <div class="resource-info">
+    <div class="stat-label" id="tResourceLabel"></div>
+    <div class="resource-name editable" id="resourceNameEl" contenteditable="true" onblur="updateResourceName(this)"></div>
+    <div class="resource-role editable" id="resourceRoleEl" contenteditable="true" onblur="updateResourceRole(this)"></div>
+  </div>
+</div>
+
+<div class="stats-wrap">
+  <div class="stat-box">
+    <div class="stat-label" id="tPeriodLabel"></div>
+    <div class="stat-value"><input id="periodInput" type="number" min="1" value="10" onchange="changePeriod(this.value)"><span id="periodUnit"></span></div>
+  </div>
+  <div class="stat-box" style="flex:2;">
+    <div class="stat-label" id="tCapacityLabel"></div>
+    <div class="stat-value">
+      <input id="capInput" type="number" min="0" value="5" onchange="changeCapacity(this.value)">
+      <span id="capNote"></span>
+    </div>
+    <div class="cap-bar-track" id="capBarTrack"></div>
+  </div>
+</div>
+
+<div class="grid" id="teamsGrid"></div>
+
+<div class="options">
+  <h3 id="tOptionsTitle"></h3>
+  <div class="sub" id="tOptionsSub"></div>
+  <div id="optionsList"></div>
+  <div class="add-opt-row" id="addOptRow"></div>
+</div>
+
+<div class="agreement">
+  <h3 id="tAgreementTitle"></h3>
+  <div id="agreementText"></div>
+</div>
+
+<div class="toolbar">
+  <button class="reset" id="tResetBtn" onclick="resetAll()"></button>
+  <button class="minuta-btn" id="tMinutaBtn" onclick="openMinuta()"></button>
+</div>
+
+<div class="modal-overlay" id="minutaOverlay" onclick="if(event.target===this) closeMinuta()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="tMinutaTitle"></h3>
+      <button class="modal-close" onclick="closeMinuta()">✕</button>
+    </div>
+    <textarea id="minutaText" readonly></textarea>
+    <div class="modal-actions">
+      <button class="btn-primary" id="tCopyBtn" onclick="copyMinuta()"></button>
+      <button class="btn-secondary" id="tDownloadBtn" onclick="downloadMinuta()"></button>
+      <button class="btn-secondary" id="tCloseBtn" onclick="closeMinuta()"></button>
+      <span class="copied-flag" id="copiedFlag"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const PALETTE = ['#FF6B4A', '#2EC4B6', '#E8A33D', '#6D2E46', '#5B7FBD', '#8E6C88', '#3E8E7E', '#C24E63'];
+  const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  const CAP_ID = 'CAPACITY';
+
+  const I18N = {
+    es: {
+      tag: 'FACILITACIÓN · RECURSO COMPARTIDO',
+      title: 'Simulador — capacidad compartida entre equipos',
+      intro: 'Parametriza el escenario en vivo: cuántos equipos compiten por el recurso, cuánta capacidad hay y cuánto necesita cada uno, en el número de días que definas. Las opciones tácticas parten de ejemplos, pero puedes agregar las que surjan en la conversación.',
+      periodLabel: 'Duración del periodo',
+      periodUnit: 'días',
+      resourceLabel: 'RECURSO COMPARTIDO',
+      resourceNamePlaceholder: 'Nombre de la persona',
+      resourceRolePlaceholder: 'Puesto o rol',
+      capacityLabel: () => 'Capacidad de ' + state.resourceName + ' en este periodo',
+      capUnassigned: (rem, cap) => rem + ' de ' + cap + ' días sin asignar',
+      capAdjusted: (eff) => ' (ajustada a ' + eff + ' con opciones activas)',
+      needs: 'Necesita', days: 'días', daysAssigned: 'días asignados',
+      needAdjusted: (n) => '(ajustado a ' + n + ' con opciones activas)',
+      riskToDelivery: 'RIESGO PARA SU ENTREGA',
+      riskHigh: 'Alto', riskMed: 'Medio', riskLow: 'Bajo',
+      impactCovered: (name) => 'Cubierto: ' + name + ' puede avanzar en este periodo con el apoyo de ' + state.resourceName + '.',
+      impactUncovered: (name) => 'Riesgo abierto: si no se cubre del todo, ' + name + ' se queda sin el apoyo suficiente de ' + state.resourceName + ' en este periodo.',
+      addTeam: 'Agregar equipo', removeTeamTitle: 'Quitar equipo',
+      optionsTitle: 'OPCIONES TÁCTICAS',
+      optionsSub: 'No solo dividir el recurso fijo — reducir cuánto se necesita o ampliar la capacidad. Agrega las que proponga el grupo.',
+      addOption: '+ Agregar opción táctica',
+      optTitleLabel: 'Título de la opción', optTitlePlaceholder: 'Ej. Aplazar pruebas manuales en este periodo',
+      optDescLabel: 'Descripción breve', optDescPlaceholder: '¿Qué implica y qué se sacrifica?',
+      optTeamLabel: 'A quién afecta', optDeltaLabel: 'Cambio en días',
+      capacityOptionLabel: () => '— Capacidad total de ' + state.resourceName + ' —',
+      saveOption: 'Agregar opción', cancel: 'Cancelar',
+      affects: 'Afecta a', totalCapacityWord: () => 'la capacidad total de ' + state.resourceName,
+      removeOptionTitle: 'Eliminar opción',
+      agreementTitle: 'Acuerdo que se está construyendo',
+      agreementEmpty: 'Empieza a asignar días arriba para ver cómo se redacta el acuerdo en tiempo real.',
+      agreementReceives: (name, alloc, need) => '<b>' + name + '</b> recibe ' + alloc + ' de ' + need + ' días necesarios',
+      agreementCovered: ' — cubierta.', agreementNotCovered: '.',
+      agreementUncoveredTail: ' Lo que queda descubierto se registra como riesgo explícito en el próximo punto de sincronización, no como sorpresa.',
+      agreementAllCoveredTail: ' Todos los equipos quedan cubiertos en este periodo sin exceder la capacidad disponible.',
+      resetBtn: '↺ Reiniciar al escenario original',
+      themeToLight: '☀', themeToDark: '☾',
+      langToggle: 'EN',
+      minutaBtn: '📋 Generar minuta',
+      minutaTitle: 'Minuta — acuerdo de capacidad compartida',
+      minutaGeneratedOn: (d) => 'Generado el ' + d,
+      minutaResource: () => 'Recurso compartido: ' + state.resourceName + ' — ' + state.resourceRole,
+      minutaPeriod: 'Periodo',
+      minutaCapacityBase: () => 'Capacidad de ' + state.resourceName + ' (base)',
+      minutaCapacityEffective: () => 'Capacidad efectiva de ' + state.resourceName + ' (con opciones activas)',
+      minutaTeamsHeader: 'ASIGNACIÓN POR EQUIPO',
+      minutaTeamLine: (name, alloc, need, pct, risk) => name + ': ' + alloc + ' de ' + need + ' días asignados (' + pct + '% cubierto) · Riesgo: ' + risk,
+      minutaAppliedHeader: 'OPCIONES TÁCTICAS APLICADAS',
+      minutaNotAppliedHeader: 'OPCIONES CONSIDERADAS, NO APLICADAS',
+      minutaNoneApplied: 'Ninguna opción táctica fue activada.',
+      minutaAgreementHeader: 'ACUERDO',
+      minutaRisksHeader: 'RIESGOS ABIERTOS / SEGUIMIENTO',
+      minutaNoRisks: 'No quedan riesgos abiertos: todos los equipos cubiertos.',
+      minutaRiskLine: (name) => name + ' queda con cobertura parcial — registrar como riesgo y dar seguimiento en el próximo punto de sincronización.',
+      minutaFooter: 'Generado con el simulador en vivo de facilitación de recurso compartido.',
+      copyBtn: '📋 Copiar minuta',
+      downloadBtn: '⬇ Descargar (.txt)',
+      closeBtn: 'Cerrar',
+      copiedMsg: '¡Copiado!',
+    },
+    en: {
+      tag: 'FACILITATION · SHARED RESOURCE',
+      title: 'Simulator — shared capacity across teams',
+      intro: 'Set the scenario live: how many teams compete for the resource, how much capacity there is, and how much each one needs, over however many days you define. The tactical options start from examples, but you can add whatever comes up in the conversation.',
+      periodLabel: 'Period length',
+      periodUnit: 'days',
+      resourceLabel: 'SHARED RESOURCE',
+      resourceNamePlaceholder: "Person's name",
+      resourceRolePlaceholder: 'Role or title',
+      capacityLabel: () => state.resourceName + "'s capacity in this period",
+      capUnassigned: (rem, cap) => rem + ' of ' + cap + ' days unassigned',
+      capAdjusted: (eff) => ' (adjusted to ' + eff + ' with active options)',
+      needs: 'Needs', days: 'days', daysAssigned: 'days assigned',
+      needAdjusted: (n) => '(adjusted to ' + n + ' with active options)',
+      riskToDelivery: 'RISK TO DELIVERY',
+      riskHigh: 'High', riskMed: 'Medium', riskLow: 'Low',
+      impactCovered: (name) => 'Covered: ' + name + ' can move forward this period with support from ' + state.resourceName + '.',
+      impactUncovered: (name) => 'Open risk: if not fully covered, ' + name + " won't have enough support from " + state.resourceName + ' this period.',
+      addTeam: 'Add team', removeTeamTitle: 'Remove team',
+      optionsTitle: 'TACTICAL OPTIONS',
+      optionsSub: "Don't just split the fixed resource — shrink what's needed or expand capacity. Add whatever the group proposes.",
+      addOption: '+ Add tactical option',
+      optTitleLabel: 'Option title', optTitlePlaceholder: 'E.g. Defer manual testing this period',
+      optDescLabel: 'Short description', optDescPlaceholder: 'What does it involve, what gets traded off?',
+      optTeamLabel: 'Who it affects', optDeltaLabel: 'Change in days',
+      capacityOptionLabel: () => "— " + state.resourceName + "'s total capacity —",
+      saveOption: 'Add option', cancel: 'Cancel',
+      affects: 'Affects', totalCapacityWord: () => state.resourceName + "'s total capacity",
+      removeOptionTitle: 'Remove option',
+      agreementTitle: 'Agreement being built',
+      agreementEmpty: 'Start allocating days above to see the agreement get written in real time.',
+      agreementReceives: (name, alloc, need) => '<b>' + name + '</b> gets ' + alloc + ' of ' + need + ' days needed',
+      agreementCovered: ' — covered.', agreementNotCovered: '.',
+      agreementUncoveredTail: ' What remains uncovered is logged as an explicit risk for the next sync point, not a surprise.',
+      agreementAllCoveredTail: ' Every team is covered this period without exceeding available capacity.',
+      resetBtn: '↺ Reset to original scenario',
+      themeToLight: '☀', themeToDark: '☾',
+      langToggle: 'ES',
+      minutaBtn: '📋 Generate summary',
+      minutaTitle: 'Summary — shared capacity agreement',
+      minutaGeneratedOn: (d) => 'Generated on ' + d,
+      minutaResource: () => 'Shared resource: ' + state.resourceName + ' — ' + state.resourceRole,
+      minutaPeriod: 'Period',
+      minutaCapacityBase: () => state.resourceName + "'s capacity (base)",
+      minutaCapacityEffective: () => state.resourceName + "'s effective capacity (with active options)",
+      minutaTeamsHeader: 'ALLOCATION BY TEAM',
+      minutaTeamLine: (name, alloc, need, pct, risk) => name + ': ' + alloc + ' of ' + need + ' days assigned (' + pct + '% covered) · Risk: ' + risk,
+      minutaAppliedHeader: 'TACTICAL OPTIONS APPLIED',
+      minutaNotAppliedHeader: 'OPTIONS CONSIDERED, NOT APPLIED',
+      minutaNoneApplied: 'No tactical option was activated.',
+      minutaAgreementHeader: 'AGREEMENT',
+      minutaRisksHeader: 'OPEN RISKS / FOLLOW-UP',
+      minutaNoRisks: 'No open risks remain: every team is covered.',
+      minutaRiskLine: (name) => name + ' remains partially covered — log as an open risk and follow up at the next sync point.',
+      minutaFooter: 'Generated with the live shared-resource facilitation simulator.',
+      copyBtn: '📋 Copy summary',
+      downloadBtn: '⬇ Download (.txt)',
+      closeBtn: 'Close',
+      copiedMsg: 'Copied!',
+    }
+  };
+
+  function seedTeams(lang){
+    if(lang === 'en'){
+      return [
+        { id:'A', name:'Team A · Profile', color: PALETTE[0], baseNeed:3, alloc:0,
+          story:'Depends on %RESOURCE% to fix the sign-up validation blocking 4 aging stories.' },
+        { id:'B', name:'Team B · Checkout', color: PALETTE[1], baseNeed:4, alloc:0,
+          story:'Needs support from %RESOURCE% to resolve technical debt causing incidents before enabling the new promotion.' },
+        { id:'C', name:'Team C · Search & Browse', color: PALETTE[2], baseNeed:2, alloc:0,
+          story:'Needs support from %RESOURCE% to instrument search analytics before launching the new navigation.' },
+      ];
+    }
+    return [
+      { id:'A', name:'Célula A · Profile', color: PALETTE[0], baseNeed:3, alloc:0,
+        story:'Depende de %RESOURCE% para resolver la validación de registro que bloquea 4 historias envejecidas.' },
+      { id:'B', name:'Célula B · Checkout', color: PALETTE[1], baseNeed:4, alloc:0,
+        story:'Necesita el apoyo de %RESOURCE% para resolver deuda técnica que está generando incidentes antes de habilitar la nueva promoción.' },
+      { id:'C', name:'Célula C · Search & Browse', color: PALETTE[2], baseNeed:2, alloc:0,
+        story:'Necesita el apoyo de %RESOURCE% para instrumentar analítica de búsqueda antes de lanzar la nueva navegación.' },
+    ];
+  }
+
+  function seedOptions(lang){
+    if(lang === 'en'){
+      return [
+        { id:1, title:'Reduce the scope of the task in B (−1 day)', desc:'Fix only the critical incident now; the rest of the tech debt is deferred.', team:'B', delta:-1, on:false },
+        { id:2, title:'Pair a developer from A with %RESOURCE% (−1 day in A)', desc:'Transfers knowledge to team A; reduces the dependency on %RESOURCE% this period and beyond.', team:'A', delta:-1, on:false },
+        { id:3, title:'Negotiate temporary reinforcement for %RESOURCE% (+1 day of capacity)', desc:'Someone else supports %RESOURCE% part-time during this period.', team:CAP_ID, delta:1, on:false },
+      ];
+    }
+    return [
+      { id:1, title:'Reducir el alcance de la tarea en B (−1 día)', desc:'Resolver solo el incidente crítico ahora; el resto de la deuda técnica queda para después.', team:'B', delta:-1, on:false },
+      { id:2, title:'Pairing de un desarrollador de A con %RESOURCE% (−1 día en A)', desc:'Transfiere conocimiento a la célula A; reduce la dependencia de %RESOURCE% en este periodo y los siguientes.', team:'A', delta:-1, on:false },
+      { id:3, title:'Negociar un refuerzo temporal para %RESOURCE% (+1 día de capacidad)', desc:'Alguien más apoya a %RESOURCE% medio tiempo durante este periodo.', team:CAP_ID, delta:1, on:false },
+    ];
+  }
+
+  function defaultState(lang){
+    return {
+      lang: lang,
+      theme: 'dark',
+      resourceName: 'Jordan Álvarez',
+      resourceRole: lang === 'en' ? 'Identity & Platform Specialist' : 'Especialista de Identidad y Plataforma',
+      periodDays: 10,
+      capacity: 5,
+      nextLetterIdx: 3,
+      nextOptId: 4,
+      teams: seedTeams(lang),
+      options: seedOptions(lang),
+    };
+  }
+
+  let state = defaultState('es');
+  let optFormOpen = false;
+  let customized = false;
+
+  function markCustomized(){ customized = true; }
+
+  function t(key){ return I18N[state.lang][key]; }
+
+  function resolveTemplate(str){
+    return (str || '').split('%RESOURCE%').join(state.resourceName || '');
+  }
+
+  function initials(name){
+    const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+    if(parts.length === 0) return '';
+    if(parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+
+  function updateResourceName(el){
+    state.resourceName = el.textContent.trim() || state.resourceName;
+    markCustomized();
+    render();
+  }
+  function updateResourceRole(el){
+    state.resourceRole = el.textContent.trim();
+    markCustomized();
+    render();
+  }
+
+  function need(team){
+    let n = team.baseNeed;
+    state.options.forEach(o => { if(o.on && o.team === team.id) n += o.delta; });
+    return Math.max(n, 0);
+  }
+
+  function baseCapacity(){ return state.capacity; }
+  function effectiveCapacity(){
+    let c = state.capacity;
+    state.options.forEach(o => { if(o.on && o.team === CAP_ID) c += o.delta; });
+    return Math.max(c, 0);
+  }
+
+  function riskInfo(team){
+    const n = need(team);
+    const a = team.alloc;
+    const pct = n === 0 ? 100 : Math.min(100, Math.round((a / n) * 100));
+    let color, label;
+    if(pct >= 100){ color='var(--green)'; label=t('riskLow'); }
+    else if(pct >= 50){ color='var(--amber)'; label=t('riskMed'); }
+    else { color='var(--red)'; label=t('riskHigh'); }
+    return { pct, color, label, n };
+  }
+
+  function totalAlloc(){ return state.teams.reduce((s,t) => s + t.alloc, 0); }
+
+  function changePeriod(val){
+    let v = parseInt(val, 10);
+    if(isNaN(v) || v < 1) v = 1;
+    state.periodDays = v;
+    render();
+  }
+
+  function changeCapacity(val){
+    let v = parseInt(val, 10);
+    if(isNaN(v) || v < 0) v = 0;
+    state.capacity = v;
+    clampAllocations();
+    render();
+  }
+
+  function clampAllocations(){
+    let cap = effectiveCapacity();
+    let excess = totalAlloc() - cap;
+    for(let i = state.teams.length - 1; i >= 0 && excess > 0; i--){
+      const cut = Math.min(state.teams[i].alloc, excess);
+      state.teams[i].alloc -= cut;
+      excess -= cut;
+    }
+  }
+
+  function changeAlloc(teamId, delta){
+    const team = state.teams.find(t => t.id === teamId);
+    const used = totalAlloc();
+    const cap = effectiveCapacity();
+    const newVal = team.alloc + delta;
+    if(newVal < 0) return;
+    if(delta > 0 && used >= cap) return;
+    team.alloc = newVal;
+    render();
+  }
+
+  function changeBaseNeed(teamId, val){
+    const team = state.teams.find(t => t.id === teamId);
+    let v = parseInt(val, 10);
+    if(isNaN(v) || v < 0) v = 0;
+    team.baseNeed = v;
+    render();
+  }
+
+  function updateName(teamId, el){
+    const team = state.teams.find(t => t.id === teamId);
+    team.name = el.textContent.trim() || team.name;
+    markCustomized();
+  }
+  function updateStory(teamId, el){
+    const team = state.teams.find(t => t.id === teamId);
+    team.story = el.textContent.trim();
+    markCustomized();
+  }
+
+  function addTeam(){
+    const letter = LETTERS[state.nextLetterIdx] || String(state.nextLetterIdx + 1);
+    state.nextLetterIdx++;
+    const color = PALETTE[state.teams.length % PALETTE.length];
+    const id = 'T' + Date.now();
+    const label = state.lang === 'en' ? ('Team ' + letter) : ('Célula ' + letter);
+    const placeholder = state.lang === 'en'
+      ? 'Describe what this team needs from the shared resource.'
+      : 'Describe aquí qué necesita este equipo del recurso compartido.';
+    state.teams.push({ id, name: label, color, baseNeed: 2, alloc: 0, story: placeholder });
+    markCustomized();
+    render();
+  }
+
+  function removeTeam(teamId){
+    state.teams = state.teams.filter(t => t.id !== teamId);
+    state.options = state.options.filter(o => o.team !== teamId);
+    clampAllocations();
+    markCustomized();
+    render();
+  }
+
+  function toggleOption(id){
+    const o = state.options.find(o => o.id === id);
+    o.on = !o.on;
+    clampAllocations();
+    render();
+  }
+
+  function removeOption(id){
+    state.options = state.options.filter(o => o.id !== id);
+    clampAllocations();
+    markCustomized();
+    render();
+  }
+
+  function showOptForm(){ optFormOpen = true; render(); document.getElementById('optTitleInput')?.focus(); }
+  function hideOptForm(){ optFormOpen = false; render(); }
+
+  function saveOption(){
+    const title = document.getElementById('optTitleInput').value.trim();
+    const desc = document.getElementById('optDescInput').value.trim();
+    const team = document.getElementById('optTeamSelect').value;
+    const delta = parseInt(document.getElementById('optDeltaInput').value, 10) || 0;
+    if(!title || !team){ return; }
+    state.options.push({ id: state.nextOptId++, title, desc, team, delta, on:false });
+    optFormOpen = false;
+    markCustomized();
+    render();
+  }
+
+  function resetAll(){
+    const lang = state.lang, theme = state.theme;
+    state = defaultState(lang);
+    state.theme = theme;
+    optFormOpen = false;
+    customized = false;
+    document.body.setAttribute('data-theme', state.theme);
+    render();
+  }
+
+  function toggleLang(){
+    state.lang = state.lang === 'es' ? 'en' : 'es';
+    if(!customized){
+      state.resourceRole = state.lang === 'en' ? 'Identity & Platform Specialist' : 'Especialista de Identidad y Plataforma';
+      const seedT = seedTeams(state.lang), seedO = seedOptions(state.lang);
+      seedT.forEach(s => { const tm = state.teams.find(x => x.id === s.id); if(tm){ tm.name = s.name; tm.story = s.story; } });
+      seedO.forEach(s => { const o = state.options.find(x => x.id === s.id); if(o){ o.title = s.title; o.desc = s.desc; } });
+    }
+    render();
+  }
+
+  function toggleTheme(){
+    state.theme = state.theme === 'dark' ? 'light' : 'dark';
+    document.body.setAttribute('data-theme', state.theme);
+    render();
+  }
+
+  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function buildMinuta(){
+    const now = new Date();
+    const dateStr = now.toLocaleString(state.lang === 'en' ? 'en-US' : 'es-MX', { dateStyle:'long', timeStyle:'short' });
+    const eff = effectiveCapacity();
+    let lines = [];
+    lines.push(t('minutaTitle').toUpperCase());
+    lines.push(t('minutaGeneratedOn')(dateStr));
+    lines.push(t('minutaResource')());
+    lines.push('');
+    lines.push(t('minutaPeriod') + ': ' + state.periodDays + ' ' + t('periodUnit'));
+    lines.push(t('minutaCapacityBase')() + ': ' + state.capacity + ' ' + t('days'));
+    if(eff !== state.capacity) lines.push(t('minutaCapacityEffective')() + ': ' + eff + ' ' + t('days'));
+    lines.push('');
+    lines.push('— ' + t('minutaTeamsHeader') + ' —');
+    state.teams.forEach(tm => {
+      const r = riskInfo(tm);
+      lines.push('• ' + t('minutaTeamLine')(tm.name, tm.alloc, r.n, r.pct, r.label));
+      const storyResolved = resolveTemplate(tm.story);
+      if(storyResolved) lines.push('   (' + storyResolved + ')');
+    });
+    lines.push('');
+    const applied = state.options.filter(o => o.on);
+    const notApplied = state.options.filter(o => !o.on);
+    lines.push('— ' + t('minutaAppliedHeader') + ' —');
+    if(applied.length === 0){
+      lines.push(t('minutaNoneApplied'));
+    } else {
+      applied.forEach(o => {
+        const teamLabel = o.team === CAP_ID ? t('totalCapacityWord')() : ((state.teams.find(x => x.id === o.team) || {}).name || o.team);
+        lines.push('• ' + resolveTemplate(o.title) + (o.desc ? ' — ' + resolveTemplate(o.desc) : '') + ' [' + t('affects') + ' ' + teamLabel + ', ' + (o.delta>0?'+':'') + o.delta + ' ' + t('days') + ']');
+      });
+    }
+    if(notApplied.length){
+      lines.push('');
+      lines.push('— ' + t('minutaNotAppliedHeader') + ' —');
+      notApplied.forEach(o => {
+        const teamLabel = o.team === CAP_ID ? t('totalCapacityWord')() : ((state.teams.find(x => x.id === o.team) || {}).name || o.team);
+        lines.push('• ' + resolveTemplate(o.title) + ' [' + t('affects') + ' ' + teamLabel + ', ' + (o.delta>0?'+':'') + o.delta + ' ' + t('days') + ']');
+      });
+    }
+    lines.push('');
+    lines.push('— ' + t('minutaAgreementHeader') + ' —');
+    const agreementEl = document.getElementById('agreementText');
+    const tmpDiv = document.createElement('div');
+    tmpDiv.innerHTML = agreementEl ? agreementEl.innerHTML : '';
+    lines.push(tmpDiv.textContent || tmpDiv.innerText || '');
+    lines.push('');
+    lines.push('— ' + t('minutaRisksHeader') + ' —');
+    const uncovered = state.teams.filter(tm => riskInfo(tm).pct < 100);
+    if(uncovered.length === 0){
+      lines.push(t('minutaNoRisks'));
+    } else {
+      uncovered.forEach(tm => lines.push('• ' + t('minutaRiskLine')(tm.name)));
+    }
+    lines.push('');
+    lines.push(t('minutaFooter'));
+    return lines.join('\n');
+  }
+
+  function openMinuta(){
+    document.getElementById('minutaText').value = buildMinuta();
+    document.getElementById('minutaOverlay').classList.add('show');
+  }
+  function closeMinuta(){
+    document.getElementById('minutaOverlay').classList.remove('show');
+  }
+  function copyMinuta(){
+    const ta = document.getElementById('minutaText');
+    const finish = () => {
+      const flag = document.getElementById('copiedFlag');
+      flag.textContent = t('copiedMsg');
+      flag.classList.add('show');
+      setTimeout(() => flag.classList.remove('show'), 1800);
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(ta.value).then(finish).catch(() => {
+        ta.select();
+        document.execCommand('copy');
+        finish();
+      });
+    } else {
+      ta.select();
+      document.execCommand('copy');
+      finish();
+    }
+  }
+  function downloadMinuta(){
+    const text = document.getElementById('minutaText').value;
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const stamp = new Date().toISOString().slice(0,10);
+    a.href = url;
+    a.download = (state.lang === 'en' ? 'summary-shared-resource-' : 'minuta-recurso-compartido-') + stamp + '.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape') closeMinuta();
+  });
+
+  function render(){
+    document.getElementById('tTag').textContent = t('tag');
+    document.getElementById('tTitle').textContent = t('title');
+    document.getElementById('tIntro').textContent = t('intro');
+    document.getElementById('tPeriodLabel').textContent = t('periodLabel');
+    document.getElementById('periodUnit').textContent = t('periodUnit');
+    document.getElementById('tCapacityLabel').textContent = t('capacityLabel')();
+    document.getElementById('tOptionsTitle').textContent = t('optionsTitle');
+    document.getElementById('tOptionsSub').textContent = t('optionsSub');
+    document.getElementById('tAgreementTitle').textContent = t('agreementTitle');
+    document.getElementById('tResetBtn').textContent = t('resetBtn');
+    document.getElementById('tMinutaBtn').textContent = t('minutaBtn');
+    document.getElementById('tMinutaTitle').textContent = t('minutaTitle');
+    document.getElementById('tCopyBtn').textContent = t('copyBtn');
+    document.getElementById('tDownloadBtn').textContent = t('downloadBtn');
+    document.getElementById('tCloseBtn').textContent = t('closeBtn');
+    document.getElementById('langToggle').textContent = t('langToggle');
+    document.getElementById('themeToggle').textContent = state.theme === 'dark' ? t('themeToLight') : t('themeToDark');
+    document.getElementById('tResourceLabel').textContent = t('resourceLabel');
+    document.getElementById('resourceAvatar').textContent = initials(state.resourceName) || '?';
+    if(document.activeElement !== document.getElementById('resourceNameEl')){
+      document.getElementById('resourceNameEl').textContent = state.resourceName;
+    }
+    if(document.activeElement !== document.getElementById('resourceRoleEl')){
+      document.getElementById('resourceRoleEl').textContent = state.resourceRole;
+    }
+    document.getElementById('periodInput').value = state.periodDays;
+    document.getElementById('capInput').value = state.capacity;
+
+    const eff = effectiveCapacity();
+    const used = totalAlloc();
+    let capNote = t('capUnassigned')(Math.max(eff - used, 0), eff);
+    if(eff !== state.capacity) capNote += t('capAdjusted')(eff);
+    document.getElementById('capNote').textContent = capNote;
+
+    const track = document.getElementById('capBarTrack');
+    track.innerHTML = state.teams.map(tm => {
+      const w = eff > 0 ? (tm.alloc / eff * 100) : 0;
+      return '<div class="cap-seg" style="width:' + w + '%; background:' + tm.color + ';"></div>';
+    }).join('');
+
+    const grid = document.getElementById('teamsGrid');
+    grid.innerHTML = state.teams.map(tm => {
+      const r = riskInfo(tm);
+      const noteDiff = r.n !== tm.baseNeed;
+      const impactText = r.pct >= 100 ? t('impactCovered')(esc(tm.name)) : t('impactUncovered')(esc(tm.name));
+      return '' +
+      '<div class="cell-card" style="border-top-color:' + tm.color + '">' +
+        '<button class="cell-remove" onclick="removeTeam(\'' + tm.id + '\')" title="' + t('removeTeamTitle') + '">✕</button>' +
+        '<div class="cell-head">' +
+          '<h2 class="editable" contenteditable="true" onblur="updateName(\'' + tm.id + '\', this)">' + esc(tm.name) + '</h2>' +
+        '</div>' +
+        '<div class="story editable" contenteditable="true" onblur="updateStory(\'' + tm.id + '\', this)">' + esc(resolveTemplate(tm.story)) + '</div>' +
+        '<div class="need-row">' + t('needs') + ' <input type="number" min="0" class="editable-num" value="' + tm.baseNeed + '" onchange="changeBaseNeed(\'' + tm.id + '\', this.value)"> ' + t('days') +
+          (noteDiff ? '<span class="need-note">' + t('needAdjusted')(r.n) + '</span>' : '') +
+        '</div>' +
+        '<div class="allocator">' +
+          '<button class="btn" style="background:' + tm.color + '" onclick="changeAlloc(\'' + tm.id + '\', -1)">−</button>' +
+          '<div class="alloc-value">' + tm.alloc + '<span>' + t('daysAssigned') + '</span></div>' +
+          '<button class="btn" style="background:' + tm.color + '" onclick="changeAlloc(\'' + tm.id + '\', 1)" ' + (used >= eff ? 'disabled' : '') + '>+</button>' +
+        '</div>' +
+        '<div class="cover-bar-track"><div class="cover-bar" style="width:' + r.pct + '%; background:' + r.color + ';"></div></div>' +
+        '<div class="risk-row"><div class="risk-label">' + t('riskToDelivery') + '</div><div class="risk-pill" style="background:' + r.color + '">' + r.label + '</div></div>' +
+        '<div class="impact">' + impactText + '</div>' +
+      '</div>';
+    }).join('') +
+    '<div class="add-card"><button onclick="addTeam()"><span class="plus">+</span>' + t('addTeam') + '</button></div>';
+
+    const optsHtml = state.options.map(o => {
+      let teamLabel;
+      if(o.team === CAP_ID){ teamLabel = t('totalCapacityWord')(); }
+      else { const tm = state.teams.find(x => x.id === o.team); teamLabel = tm ? tm.name : o.team; }
+      return '' +
+      '<div class="opt ' + (o.on ? 'on' : '') + '">' +
+        '<div class="opt-main" onclick="toggleOption(' + o.id + ')">' +
+          '<div class="opt-check">✓</div>' +
+          '<div class="opt-text"><b>' + esc(resolveTemplate(o.title)) + '</b><span>' + esc(resolveTemplate(o.desc)) + (o.desc ? ' · ' : '') + t('affects') + ' ' + esc(teamLabel) + ' (' + (o.delta>0?'+':'') + o.delta + ' ' + t('days') + ')</span></div>' +
+        '</div>' +
+        '<button class="opt-del" onclick="removeOption(' + o.id + ')" title="' + t('removeOptionTitle') + '">✕</button>' +
+      '</div>';
+    }).join('');
+    document.getElementById('optionsList').innerHTML = optsHtml;
+
+    const addOptRow = document.getElementById('addOptRow');
+    if(optFormOpen){
+      const teamOptions = state.teams.map(tm => '<option value="' + tm.id + '">' + esc(tm.name) + '</option>').join('')
+        + '<option value="' + CAP_ID + '">' + t('capacityOptionLabel')() + '</option>';
+      addOptRow.innerHTML = '' +
+      '<div class="opt-form">' +
+        '<div><label>' + t('optTitleLabel') + '</label><input id="optTitleInput" type="text" placeholder="' + t('optTitlePlaceholder') + '"></div>' +
+        '<div><label>' + t('optDescLabel') + '</label><textarea id="optDescInput" rows="2" placeholder="' + t('optDescPlaceholder') + '"></textarea></div>' +
+        '<div class="opt-form-row">' +
+          '<div><label>' + t('optTeamLabel') + '</label><select id="optTeamSelect">' + teamOptions + '</select></div>' +
+          '<div><label>' + t('optDeltaLabel') + '</label><input id="optDeltaInput" type="number" value="-1"></div>' +
+        '</div>' +
+        '<div class="opt-form-actions">' +
+          '<button class="btn-save" onclick="saveOption()">' + t('saveOption') + '</button>' +
+          '<button class="btn-cancel" onclick="hideOptForm()">' + t('cancel') + '</button>' +
+        '</div>' +
+      '</div>';
+    } else {
+      addOptRow.innerHTML = '<button class="add-opt-btn" onclick="showOptForm()">' + t('addOption') + '</button>';
+    }
+
+    let text = '';
+    if(used === 0){
+      text = t('agreementEmpty');
+    } else {
+      const parts = state.teams.map(tm => {
+        const r = riskInfo(tm);
+        return t('agreementReceives')(esc(tm.name), tm.alloc, r.n) + (r.pct>=100 ? t('agreementCovered') : t('agreementNotCovered'));
+      });
+      text = parts.join(' ');
+      const anyUncovered = state.teams.some(tm => riskInfo(tm).pct < 100);
+      text += anyUncovered ? t('agreementUncoveredTail') : t('agreementAllCoveredTail');
+    }
+    document.getElementById('agreementText').innerHTML = text;
+  }
+
+  render();
+</script>
+</body>
+</html>
