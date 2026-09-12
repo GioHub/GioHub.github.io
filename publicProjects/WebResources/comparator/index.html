@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Folder Diff</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main class="app">
+
+        <header class="header">
+            <div>
+                <h1>Folder Diff</h1>
+                <p>Compara dos carpetas locales sin subir ningún archivo.</p>
+            </div>
+
+            <div class="privacy-badge">
+                🔒 100% local
+            </div>
+        </header>
+
+
+        <!-- CARPETAS -->
+
+        <section class="folders">
+
+            <div class="folder-card">
+
+                <div class="folder-title">
+                    <span class="folder-icon">📁</span>
+                    <span>Carpeta A</span>
+                </div>
+
+                <input
+                    type="file"
+                    id="folderA"
+                    webkitdirectory
+                    directory
+                    multiple
+                    hidden
+                >
+
+                <label for="folderA" class="select-button">
+                    Seleccionar carpeta
+                </label>
+
+                <div id="folderAName" class="folder-name">
+                    Ninguna carpeta seleccionada
+                </div>
+
+            </div>
+
+
+            <div class="vs">
+                VS
+            </div>
+
+
+            <div class="folder-card">
+
+                <div class="folder-title">
+                    <span class="folder-icon">📁</span>
+                    <span>Carpeta B</span>
+                </div>
+
+                <input
+                    type="file"
+                    id="folderB"
+                    webkitdirectory
+                    directory
+                    multiple
+                    hidden
+                >
+
+                <label for="folderB" class="select-button">
+                    Seleccionar carpeta
+                </label>
+
+                <div id="folderBName" class="folder-name">
+                    Ninguna carpeta seleccionada
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ACCIONES -->
+
+        <section class="actions">
+
+            <button id="compareButton" class="primary-button" disabled>
+                Comparar carpetas
+            </button>
+
+            <button id="clearButton" class="secondary-button">
+                Limpiar
+            </button>
+
+        </section>
+
+
+        <!-- PROGRESO -->
+
+        <section id="progressSection" class="progress-section hidden">
+
+            <div class="progress-header">
+
+                <span id="progressText">
+                    Preparando análisis...
+                </span>
+
+                <span id="progressPercent">
+                    0%
+                </span>
+
+            </div>
+
+            <div class="progress-bar">
+                <div id="progressBar"></div>
+            </div>
+
+        </section>
+
+
+        <!-- RESUMEN -->
+
+        <section id="summary" class="summary hidden">
+
+            <div class="summary-card">
+                <span class="summary-number" id="totalA">0</span>
+                <span class="summary-label">Archivos A</span>
+            </div>
+
+            <div class="summary-card">
+                <span class="summary-number" id="totalB">0</span>
+                <span class="summary-label">Archivos B</span>
+            </div>
+
+            <div class="summary-card only-a">
+                <span class="summary-number" id="onlyACount">0</span>
+                <span class="summary-label">Solo A</span>
+            </div>
+
+            <div class="summary-card only-b">
+                <span class="summary-number" id="onlyBCount">0</span>
+                <span class="summary-label">Solo B</span>
+            </div>
+
+            <div class="summary-card modified">
+                <span class="summary-number" id="modifiedCount">0</span>
+                <span class="summary-label">Modificados</span>
+            </div>
+
+            <div class="summary-card equal">
+                <span class="summary-number" id="equalCount">0</span>
+                <span class="summary-label">Iguales</span>
+            </div>
+
+            <div class="summary-card">
+                <span class="summary-number" id="duration">0s</span>
+                <span class="summary-label">Tiempo</span>
+            </div>
+
+        </section>
+
+
+        <!-- RESULTADOS -->
+
+        <section id="resultsSection" class="results hidden">
+
+            <div class="results-header">
+
+                <div class="filters">
+
+                    <button
+                        class="filter active"
+                        data-filter="all">
+                        Todos
+                    </button>
+
+                    <button
+                        class="filter"
+                        data-filter="only-a">
+                        Solo A
+                    </button>
+
+                    <button
+                        class="filter"
+                        data-filter="only-b">
+                        Solo B
+                    </button>
+
+                    <button
+                        class="filter"
+                        data-filter="modified">
+                        Modificados
+                    </button>
+
+                    <button
+                        class="filter"
+                        data-filter="equal">
+                        Iguales
+                    </button>
+
+                </div>
+
+
+                <div class="result-actions">
+
+                    <input
+                        type="search"
+                        id="searchInput"
+                        placeholder="Buscar archivo..."
+                    >
+
+                    <button id="copyButton" class="secondary-button">
+                        📋 Copiar
+                    </button>
+
+                    <button id="csvButton" class="secondary-button">
+                        ⬇ CSV
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Estado</th>
+                            <th>Ruta</th>
+                            <th>Tamaño A</th>
+                            <th>Tamaño B</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="resultsBody"></tbody>
+
+                </table>
+
+            </div>
+
+            <div id="noResults" class="no-results hidden">
+                No hay resultados que coincidan con el filtro.
+            </div>
+
+        </section>
+
+
+        <footer>
+
+            <span>
+                Folder Diff
+            </span>
+
+            <span>
+                Los archivos nunca salen de tu dispositivo.
+            </span>
+
+        </footer>
+
+    </main>
+
+
+    <script src="app.js"></script>
+
+</body>
+</html>
