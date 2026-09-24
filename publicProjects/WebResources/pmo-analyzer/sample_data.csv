@@ -1,0 +1,19 @@
+ID,Work Item Type,State,Assigned To,Tags,Iteration Path,Area Path,Equipo Principal,Story Points,Effort,Created Date,Priority,Severity,Title
+1,User Story,Active,Ana Torres,SP2; Célula 1,Proyecto\Sprint 2,Proyecto\Frontend,Front,5,,2026-06-01,2,,Actualizar formulario de registro
+2,Bug,New,Luis Peña,SP2; Célula 2,Proyecto\Sprint 2,Proyecto\Backend,Back,,3,2026-06-02,1,Alta,Error al guardar orden
+3,Bug,Closed,Ana Torres,SP3; Célula 1,Proyecto\Sprint 3,Proyecto\QA,QA,3,,2026-05-20,2,Media,Validación de correo falla
+4,Task,Resolved,Mia Cruz,SP1,Proyecto\Sprint 1,Proyecto\Backend,Back,2,,2026-05-10,3,,Configurar pipeline CI
+5,Epic,Design,Luis Peña,SP3,Proyecto\Sprint 3,Proyecto\UX,UX/CX,8,,2026-05-15,2,,Rediseño de checkout
+6,Bug,Active,Ana Torres,SP3; Célula 2,Proyecto\Sprint 3,Proyecto\Backend,Back,,5,2026-06-05,1,Alta,Timeout en API de pagos
+7,Bug,Active,Ana Torres,SP3; Célula 2,Proyecto\Sprint 3,Proyecto\Backend,Back,,2,2026-06-05,2,Media,Icono roto en dashboard
+8,Bug,Active,Mia Cruz,SP3; Célula 2,Proyecto\Sprint 3,Proyecto\Backend,Back,,1,2026-06-06,3,Baja,Texto desalineado en móvil
+9,Task,Certified DEV,Mia Cruz,SP1,Proyecto\Sprint 1,Proyecto\QA,QA,1,,2026-05-11,3,,Documentar caso de prueba
+10,Análisis,Reopened,Mia Cruz,,Proyecto\Sprint 1,Proyecto\BA,BA,,,2026-05-08,2,,Levantamiento de requerimientos
+11,Feature,Active,Carla Ríos,SP2; Célula 1,Proyecto\Sprint 2,Proyecto\Frontend,Front,13,,2026-05-25,1,,Módulo de reportes
+12,User Story,Closed,Carla Ríos,SP1; Célula 1,Proyecto\Sprint 1,Proyecto\Frontend,Front,5,,2026-05-05,2,,Login con SSO
+13,User Story,New,,SP3,Proyecto\Sprint 3,Proyecto\Frontend,Front,3,,2026-06-10,3,,Exportar reporte a PDF
+14,Test Case,Ready,Carla Ríos,SP3; Célula 3,Proyecto\Sprint 3,Proyecto\QA,QA,,1,2026-06-08,2,,Prueba de regresión de pagos
+15,UX UI,Active,Luis Peña,Célula 3,Proyecto\Sprint 3,Proyecto\UX,UX/CX,2,,2026-06-09,2,,Wireframe de perfil de usuario
+16,Bug,Removed,Mia Cruz,SP1; Célula 2,Proyecto\Sprint 1,Proyecto\Backend,Back,,,2026-05-12,3,Baja,Duplicado - ver #6
+17,Task,Active,,SP4,Proyecto\Sprint 4,Proyecto\Backend,Back,3,,2026-06-15,2,,Optimizar consulta de reportes
+18,Bug,New,Ana Torres,SP4; Célula 1,Proyecto\Sprint 4,Proyecto\Backend,Back,,,2026-06-16,1,Alta,Sesión expira antes de tiempo

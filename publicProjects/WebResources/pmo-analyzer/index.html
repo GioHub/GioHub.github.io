@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Azure DevOps PMO Analyzer</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-icon">◆</span>
+    <div>
+      <h1>Azure DevOps PMO Analyzer</h1>
+      <p class="subtitle">Análisis local de Work Items — 100% en tu navegador, sin subir información a ningún servidor</p>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <span id="fileStatus" class="file-status">Sin archivo cargado</span>
+    <button id="btnReset" class="btn btn-ghost" hidden>Cargar otro CSV</button>
+  </div>
+</header>
+
+<!-- ===================== PANTALLA DE CARGA ===================== -->
+<section id="uploadScreen" class="upload-screen">
+  <div id="dropZone" class="drop-zone">
+    <div class="drop-icon">⇪</div>
+    <h2>Arrastra tu export de Azure DevOps (.csv)</h2>
+    <p>o haz clic para seleccionar un archivo desde tu equipo</p>
+    <input type="file" id="fileInput" accept=".csv,text/csv" hidden>
+    <button class="btn btn-primary" id="btnBrowse">Seleccionar CSV</button>
+    <p class="drop-hint">El archivo se procesa completamente en memoria. Nada se envía a internet.</p>
+    <p id="uploadError" class="upload-error" hidden></p>
+  </div>
+</section>
+
+<!-- ===================== DASHBOARD ===================== -->
+<main id="dashboard" class="dashboard" hidden>
+
+  <!-- Filtros -->
+  <section class="panel filters-panel">
+    <div class="panel-header">
+      <h2>Filtros</h2>
+      <button id="btnClearFilters" class="btn btn-link">Limpiar filtros</button>
+    </div>
+    <div id="filtersContainer" class="filters-grid"></div>
+  </section>
+
+  <!-- Semáforo + Resumen ejecutivo IA -->
+  <section class="panel summary-panel">
+    <div class="semaforo-block">
+      <div id="semaforoLuz" class="semaforo-luz semaforo-gris"></div>
+      <div>
+        <div class="semaforo-label">Estatus PMO</div>
+        <div id="semaforoTexto" class="semaforo-texto">—</div>
+      </div>
+    </div>
+    <div class="ai-summary">
+      <div class="ai-summary-header">
+        <span class="ai-badge">Resumen ejecutivo · motor de reglas local</span>
+      </div>
+      <p id="aiSummaryText">Carga un archivo CSV para generar el resumen ejecutivo.</p>
+    </div>
+  </section>
+
+  <!-- KPIs -->
+  <section class="panel kpi-panel">
+    <h2>Indicadores Ejecutivos (KPIs)</h2>
+    <div id="kpiGrid" class="kpi-grid"></div>
+  </section>
+
+  <!-- Gráficos -->
+  <section class="panel charts-panel">
+    <h2>Distribuciones</h2>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>Por Estado</h3>
+        <canvas id="chartEstado"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Por Tipo de Work Item</h3>
+        <canvas id="chartTipo"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Por Sprint</h3>
+        <canvas id="chartSprint"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Por Célula</h3>
+        <canvas id="chartCelula"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Por Equipo Principal</h3>
+        <canvas id="chartEquipo"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Por Responsable (Top 10)</h3>
+        <canvas id="chartResponsable"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- Diagnósticos automáticos -->
+  <section class="panel diagnostics-panel">
+    <h2>Diagnósticos Automáticos</h2>
+    <ul id="diagnosticsList" class="diagnostics-list"></ul>
+  </section>
+
+  <!-- Tabla detalle -->
+  <section class="panel table-panel">
+    <div class="panel-header">
+      <h2>Detalle de Work Items <span id="tableCount" class="count-badge"></span></h2>
+    </div>
+    <div class="table-scroll">
+      <table id="detailTable">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer class="app-footer">
+  <p>Procesamiento 100% local · No hay backend, base de datos ni persistencia · Los datos se pierden al recargar la página</p>
+</footer>
+
+<script src="lib/papaparse.min.js"></script>
+<script src="lib/chart.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/parser.js"></script>
+<script src="js/kpi.js"></script>
+<script src="js/aiSummary.js"></script>
+<script src="js/filters.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/table.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
